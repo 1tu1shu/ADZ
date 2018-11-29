@@ -1,0 +1,23 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.tushu.sdk" >
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application>
+        <!-- 外插广告 -->
+        <activity
+            android:name="com.tushu.sdk.outad.activity.FacebookShowActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name="com.tushu.sdk.outad.activity.AdmobShowActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"/>
+        <activity
+            android:name="com.tushu.sdk.outad.activity.AdtShowActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"/>
+    </application>
+
+</manifest>

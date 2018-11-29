@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#ffffff</color>
+    <color name="black_33">#333333</color>
+    <color name="black_66">#666666</color>
+    <color name="black_99">#999999</color>
+
+
+    <color name="adz_out_btn">#b63de3</color>
+    <color name="adz_solid_bg">#E0F4EC</color>
+    <color name="adz_stroke_bg">#86D2B4</color>
+    <color name="adz_btn_bg">#42BE74</color>
+
+
+</resources>

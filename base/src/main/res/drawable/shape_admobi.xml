@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 圆角 -->
+    <corners
+        android:radius="@dimen/w4dp" />
+
+    <!--4fc281-->
+    <solid
+        android:color="@color/adz_btn_bg"/>
+
+</shape>

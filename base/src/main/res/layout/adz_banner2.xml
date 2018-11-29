@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ad_fl"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_ad_bg"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ad_content_ll"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/h60dp"
+            android:paddingBottom="@dimen/h10dp"
+            android:paddingTop="@dimen/h10dp"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/ad_icon"
+                android:layout_width="@dimen/h40dp"
+                android:layout_height="@dimen/h40dp"
+                android:layout_marginLeft="@dimen/w25dp"/>
+
+            <TextView
+                android:id="@+id/ad_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/w10dp"
+                android:layout_marginRight="@dimen/w10dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/black_33"
+                android:textSize="@dimen/f16sp" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ad_image"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/h120dp"
+            android:adjustViewBounds="true"/>
+
+        <TextView
+            android:id="@+id/ad_desc"
+            android:layout_marginTop="@dimen/h10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:lineSpacingExtra="@dimen/h5dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/w40dp"
+            android:layout_marginRight="@dimen/w40dp"
+            android:textColor="@color/black_33"
+            android:textSize="@dimen/f14sp" />
+
+        <TextView
+            android:id="@+id/ad_open"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/h40dp"
+            android:layout_marginTop="@dimen/h10dp"
+            android:layout_marginBottom="@dimen/h15dp"
+            android:layout_marginLeft="@dimen/w40dp"
+            android:layout_marginRight="@dimen/w40dp"
+            android:background="@drawable/shape_admobi"
+            android:gravity="center"
+            android:text="INSTALL NOW"
+            android:textColor="@color/white"
+            android:textSize="@dimen/f16sp"
+            android:fontFamily="sans-serif-medium"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AD"
+        android:textColor="@color/white"
+        android:textSize="8sp"
+        android:background="#4EBF7B"
+        android:paddingLeft="@dimen/w5dp"
+        android:paddingRight="@dimen/w5dp"
+        android:paddingTop="@dimen/h2dp"
+        android:paddingBottom="@dimen/h2dp"
+        android:textStyle="bold"
+        android:visibility="visible"/>
+
+    <ImageView
+        android:id="@+id/ad_choices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:visibility="gone"/>
+
+</FrameLayout>
