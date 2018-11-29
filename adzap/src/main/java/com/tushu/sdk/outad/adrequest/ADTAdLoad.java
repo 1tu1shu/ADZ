@@ -81,7 +81,7 @@ public class ADTAdLoad implements AdLoad {
             DotUtil.sendEvent(DotUtil.OUT_AD_ADT_REQUEST);
             AdManager.getInstence().setShowAd(true);
         } else {
-            AdtAds.init(context, AdtAds.getAppKey(context), new Callback() {
+            AdtAds.init((Activity) context, AdtAds.getAppKey(context), new Callback() {
                 @Override
                 public void onSuccess() {
                     TSSDK.isAdtInit = true;

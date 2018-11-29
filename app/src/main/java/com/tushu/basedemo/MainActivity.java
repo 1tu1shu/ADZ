@@ -4,8 +4,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.tushu.sdk.TSSDK;
-import com.tushu.sdk.ad.AdInterstitial;
-import com.tushu.sdk.ad.AdUtil;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -15,7 +13,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AdInterstitial.getInstance(this).preloadAdmob("ca-app-pub-8080140584266451/4774517719");
+        TSSDK.initAdt(this,"hO2besnXs9fiycmEtpNVOdn08V5VERL9");
+
 
     }
 }

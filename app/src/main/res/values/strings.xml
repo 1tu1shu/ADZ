@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">BaseDemo</string>
+    <string name="app_name">ADZDemo</string>
+    <string name="facebook_app_id">203411000521492</string>
 </resources>
