@@ -15,6 +15,6 @@ public class MainActivity extends AppCompatActivity {
 
         TSSDK.initAdt(this,"hO2besnXs9fiycmEtpNVOdn08V5VERL9");
 
-
+        //gradlew clean generatePomFileForReleasePublication build bintrayUpload -PbintrayUser=zjh666 -PbintrayKey=d887fe4c06f0404a4ca4dd93fe1e83f2feb5ee21 -PdryRun=false
     }
 }

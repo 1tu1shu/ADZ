@@ -9,6 +9,10 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -19,13 +23,12 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation project(':adzap')
-    implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.facebook.android:audience-network-sdk:4.28.1'
     implementation 'com.facebook.android:facebook-share:4.30.0'
     implementation 'com.google.firebase:firebase-ads:17.0.0'
     implementation 'com.flurry.android:analytics:10.0.0@aar'
     implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation project(':adzap')
 }
 repositories {
     flatDir {
