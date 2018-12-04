@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class Logger {
 
-    private static final String TAG = "LJW";
+    private static final String TAG = "zzz";
     private static boolean showLog = true;
 
     public static void d(String content) {

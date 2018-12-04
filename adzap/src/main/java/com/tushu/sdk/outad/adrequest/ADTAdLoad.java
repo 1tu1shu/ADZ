@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.aiming.mdt.sdk.AdtAds;
 import com.aiming.mdt.sdk.Callback;
+import com.aiming.mdt.sdk.ad.nativead.MediaView;
 import com.aiming.mdt.sdk.ad.nativead.NativeAd;
 import com.aiming.mdt.sdk.ad.nativead.NativeAdListener;
 import com.aiming.mdt.sdk.ad.nativead.NativeAdView;
@@ -103,12 +104,12 @@ public class ADTAdLoad implements AdLoad {
     public void loadAdView(final Context context) {
         AdModel adModel = AdUtil.getAdModel(SharedPref.getString(context, SharedPref.AD_FACEBOOK_ID));
 
-        mNativeAdView = mNativeAd.getNativeAdView(context);
+        mNativeAdView = new NativeAdView(context);
 
         LayoutInflater inflater = LayoutInflater.from(context);
         adView = inflater.inflate(com.tushu.sdk.R.layout.adz_out_layout, null);
 
-        ImageView ad_image = adView.findViewById(com.tushu.sdk.R.id.ad_image);
+        MediaView ad_media = adView.findViewById(com.tushu.sdk.R.id.ad_media);
         final ImageView ad_close = adView.findViewById(com.tushu.sdk.R.id.ad_close);
         ImageView ad_icon = adView.findViewById(com.tushu.sdk.R.id.ad_icon);
         TextView ad_title = adView.findViewById(com.tushu.sdk.R.id.ad_title);
@@ -144,15 +145,15 @@ public class ADTAdLoad implements AdLoad {
         //按钮
         if (null != ad_open) ad_open.setText(oneAdInfo.getCallToActionText());
         //图片
-        if (null != ad_image && oneAdInfo.getImg() != null && oneAdInfo.getImg().getUrl() != null) {
-            Picasso.with(context).load(oneAdInfo.getImg().getUrl()).into(ad_image);
-        }
+//        if (null != ad_image && oneAdInfo.getImg() != null && oneAdInfo.getImg().getUrl() != null) {
+//            Picasso.get().load(oneAdInfo.getImg().getUrl()).into(ad_image);
+//        }
         //icon
         if (null != ad_icon && oneAdInfo.getIconUrl() != null) {
-            Picasso.with(context).load(oneAdInfo.getIconUrl()).into(ad_icon);
+            Picasso.get().load(oneAdInfo.getIconUrl()).into(ad_icon);
         }
 
-        mNativeAdView.addAdView(adView);
+        mNativeAdView.addView(adView);
 
         List<View> views = new ArrayList<>();
 
@@ -169,15 +170,15 @@ public class ADTAdLoad implements AdLoad {
                 Logger.d("facebook 描述可点");
                 views.add(ad_desc);
             }
-            if (new Random().nextInt(100) <= adModel.coverRate) {
-                Logger.d("facebook 大图可点");
-                views.add(ad_image);
-            }
+//            if (new Random().nextInt(100) <= adModel.coverRate) {
+//                Logger.d("facebook 大图可点");
+//                views.add(ad_image);
+//            }
         }
 
         if (null != ad_open) views.add(ad_open);
 
-        mNativeAdView.setCallToActionViews(views);
+        mNativeAdView.setCallToActionViews(mNativeAd,ad_media,views);
 
         DotUtil.sendEvent(DotUtil.OUT_AD_SHOW_VIEW);
         OutADDBHelper helper = new OutADDBHelper(context);

@@ -8,7 +8,7 @@ public class AdModel {
 
     public String adid;// 唯一标识
 
-    public int adClickInvalid = 1;//是否仅btn可点
+    public int adClickInvalid = 0;//是否仅btn可点
     public int backClickable = 0;//是否返回键可用
     public int bigImgClickable = 0;//关闭按钮大小
     public long closeBtnTime = 800;//关闭按钮延迟显示时间
@@ -27,6 +27,6 @@ public class AdModel {
     public long screenIntervalTime = 30000L;//广告显示间隔时间
     public int screenNum = 30;//最大显示次数
     public int screenOpen = 1;//是否展示广告  1为显示  0为不显示
-    public double screenOpenTime = 30*60*1000L;//安装后过多久可以弹广告
+    public double screenOpenTime = 30 * 60 * 1000L;//安装后过多久可以弹广告
 
 }

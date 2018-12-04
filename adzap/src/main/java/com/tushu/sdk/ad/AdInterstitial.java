@@ -23,7 +23,6 @@ import org.json.JSONObject;
 
 public class AdInterstitial {
 
-
     private Context context;
     private com.aiming.mdt.sdk.ad.interstitialAd.InterstitialAd adtAd;
     private com.google.android.gms.ads.InterstitialAd admobAd;
@@ -55,24 +54,36 @@ public class AdInterstitial {
         void onError(int code, String e);
     }
 
-
     public AdInterstitial(Context context) {
         this.context = context;
     }
 
-    public void loadAdmob(){
-        Log.e("zzz","预加载Google插屏-"+"ca-app-pub-8080140584266451/5833549257");
-        loadAdmob("ca-app-pub-8080140584266451/5833549257", true);
+    public void preLoadAdt(String adTimeId){
+        this.adTimeId = adTimeId;
+        isPreLoad = true;
+        loadAdt(adTimeId,isPreLoad);
     }
 
-    public void preloadAdmob(String adId){
-        Log.e("zzz", "预加载Google插屏:"+adId);
-        loadAdmob(adId, true);
+    public void preLoadAdmob(String admobId){
+        this.admobId = admobId;
+        isPreLoad = true;
+        loadAdmob(admobId,isPreLoad);
     }
 
-    public void loadAdmob(String adId, final boolean isPreLoad){
+    public void preLoadFbAd(String adFbId,String admobId){
+        this.adFbId = adFbId;
+        this.admobId = admobId;
+        isPreLoad = true;
+        loadNativeAd(adFbId,admobId,isPreLoad);
+    }
+
+    public void loadAdmob(String admobId){
+        loadAdmob(admobId,false);
+    }
+
+    public void loadAdmob(String admobId, final boolean isPreLoad){
         admobAd = new com.google.android.gms.ads.InterstitialAd(context);
-        admobAd.setAdUnitId(adId);
+        admobAd.setAdUnitId(admobId);
         admobAd.setImmersiveMode(true);
         admobAd.setAdListener(new com.google.android.gms.ads.AdListener(){
             @Override
@@ -101,87 +112,9 @@ public class AdInterstitial {
         admobAd.loadAd(new AdRequest.Builder().build());
     }
 
-    public void loadAd(String adTimeId){
-        this.adTimeId = adTimeId;
-        isPreLoad = false;
-        loadAdt();
+    public void loadNativeAd(String fbId,String admobId){
+        loadNativeAd(fbId,admobId,false);
     }
-
-    public void preLoadAdt(String adTimeId){
-        this.adTimeId = adTimeId;
-        isPreLoad = true;
-        loadAdt();
-//        loadAdmob();
-    }
-
-    public void preLoadAd(String fbId,String admobId){
-        isPreLoad = true;
-        loadNativeAd(fbId,admobId,true);
-    }
-
-
-    public void loadAd(String adtId,boolean islimit) {
-        this.adTimeId = adtId;
-        if (islimit) {
-//            long time = System.currentTimeMillis();
-//            long preTime = SharedPref.getLong(context, adtId, 0);
-//            if (preTime == 0) {
-//                SharedPref.setLong(context, adtId, System.currentTimeMillis());
-//                return;
-//            }
-//            if (time - preTime >= 12 * 60 * 60 * 1000) {
-//                loadAdt();
-//                SharedPref.setLong(context, adtId, System.currentTimeMillis());
-//            }
-        } else {
-            loadAdt();
-        }
-    }
-
-    public void destroy() {
-        if (null != fbAd) {
-            fbAd.setAdListener(null);
-            fbAd.destroy();
-            fbAd = null;
-        }
-        if(null!=adtAd){
-            adtAd.destroy(context);
-        }
-    }
-
-//    public void showAd(){
-//        if(null!=adtAd&&adtAd.isReady()&&isPreLoad){
-//            adtAd.show(context);
-//        }
-//    }
-
-    public boolean showAdmob(){
-        if (null!=admobAd&&admobAd.isLoaded()) {
-            admobAd.show();
-            return true;
-        }
-        return false;
-    }
-
-    public boolean showAdt(){
-        if (null!=adtAd&&adtAd.isReady()&&isPreLoad) {
-            adtAd.show(context);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean showAd(){
-        if (null!=fbAd&&fbAd.isAdLoaded()&&isPreLoad) {
-            fbAd.show();
-            return true;
-        }else if(null!=admobAd&&admobAd.isLoaded()&&isPreLoad) {
-            admobAd.show();
-            return true;
-        }
-        return false;
-    }
-
 
     public void loadNativeAd(String fbId, final String admobId, final boolean isPreLoad) {
 //        if (null == fbAd) {
@@ -229,7 +162,11 @@ public class AdInterstitial {
     }
 
 
-    public void loadAdt(){
+    public void loadAdt(String adTimeId){
+        loadAdt(adTimeId,false);
+    }
+
+    public void loadAdt(String adTimeId,final boolean isPreLoad){
         if(null==adTimeId)return;
         if(!TSSDK.isAdtInit)return;
         String adId = adTimeId;
@@ -240,7 +177,6 @@ public class AdInterstitial {
             public void onADReady() {
                 if(null!=adtAd&&adtAd.isReady()&&!isPreLoad){
                     adtAd.show(context);
-                    DotUtil.sendAD(DotUtil.AD_LOAD,4,adTimeId);
                 }
                 if(null!=adListener){
                     adListener.onAdLoad();
@@ -252,7 +188,6 @@ public class AdInterstitial {
                 if(null!=adListener) {
                     adListener.onAdClick();
                 }
-                DotUtil.sendAD(DotUtil.AD_CLICK,4,adTimeId);
             }
 
             @Override
@@ -261,14 +196,14 @@ public class AdInterstitial {
                 if(null!=adListener) {
                     adListener.onError(1, msg);
                 }
-                JSONObject jsonObj = new JSONObject();
-                try {
-                    jsonObj.put("adId",adTimeId);
-                    jsonObj.put("errorMsg",msg);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                DotUtil.sendEventWithExtra(DotUtil.AD_FAIL,jsonObj);
+//                JSONObject jsonObj = new JSONObject();
+//                try {
+//                    jsonObj.put("adId",adTimeId);
+//                    jsonObj.put("errorMsg",msg);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//                DotUtil.sendEventWithExtra(DotUtil.AD_FAIL,jsonObj);
             }
 
             @Override
@@ -278,4 +213,51 @@ public class AdInterstitial {
         });
         adtAd.loadAd(context);
     }
+
+    public boolean showAdmob(){
+        if (null!=admobAd&&admobAd.isLoaded()) {
+            admobAd.show();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean showFb(){
+        if (null!=fbAd&&fbAd.isAdLoaded()&&isPreLoad) {
+            fbAd.show();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean showAdt(){
+        if (null!=adtAd&&adtAd.isReady()&&isPreLoad) {
+            adtAd.show(context);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean showAd(){
+        if (null!=fbAd&&fbAd.isAdLoaded()&&isPreLoad) {
+            fbAd.show();
+            return true;
+        }else if(null!=admobAd&&admobAd.isLoaded()&&isPreLoad) {
+            admobAd.show();
+            return true;
+        }
+        return false;
+    }
+
+    public void destroy() {
+        if (null != fbAd) {
+            fbAd.setAdListener(null);
+            fbAd.destroy();
+            fbAd = null;
+        }
+        if(null!=adtAd){
+            adtAd.destroy(context);
+        }
+    }
+
 }

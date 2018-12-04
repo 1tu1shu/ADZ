@@ -25,5 +25,4 @@ public class AdCustom extends AdBase {
         return layout;
     }
 
-
 }

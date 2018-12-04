@@ -26,7 +26,8 @@ public class MyApplication extends Application{
         FacebookSdk.sdkInitialize(this);
         AppEventsLogger.activateApp(this);
 
-        TSSDK.init(this,"203411000521492_203442757184983","ca-app-pub-8080140584266451/7819060055");
+        TSSDK.readFbLog();
+        TSSDK.init(this,"203411000521492_203443257184933","ca-app-pub-8080140584266451/7819060055");
     }
 
     private void initFlurry() {

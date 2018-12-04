@@ -17,8 +17,13 @@ import android.widget.TextView;
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdChoicesView;
 import com.facebook.ads.AdError;
+import com.facebook.ads.AdIconView;
 import com.facebook.ads.AdListener;
+import com.facebook.ads.AdOptionsView;
+import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
+import com.facebook.ads.NativeAdLayout;
+import com.facebook.ads.NativeAdListener;
 import com.tushu.sdk.AdUtil;
 import com.tushu.sdk.R;
 import com.tushu.sdk.ad.AdModel;
@@ -45,7 +50,8 @@ public class FacebookAdLoad implements AdLoad {
         DotUtil.sendEvent(DotUtil.OUT_AD_FACEBOOK_REQUEST);
         AdManager.getInstence().setShowAd(true);
         nativeAd = new NativeAd(context, adID);
-        nativeAd.setAdListener(new AdListener() {
+        nativeAd.setAdListener(new NativeAdListener() {
+
             @Override
             public void onError(Ad ad, AdError adError) {
                 AdManager.getInstence().setShowAd(false);
@@ -75,6 +81,11 @@ public class FacebookAdLoad implements AdLoad {
 
             @Override
             public void onLoggingImpression(Ad ad) {
+
+            }
+
+            @Override
+            public void onMediaDownloaded(Ad ad) {
 
             }
 
@@ -117,27 +128,28 @@ public class FacebookAdLoad implements AdLoad {
 
         // Add the AdChoices icon
         LinearLayout adChoicesContainer = adView.findViewById(R.id.ad_choices_container);
-        AdChoicesView adChoicesView = new AdChoicesView(context, nativeAd, true);
-        adChoicesContainer.addView(adChoicesView, 0);
+        NativeAdLayout nativeAdLayout = adView.findViewById(R.id.ad_side_fl);
+        AdOptionsView adOptionsView = new AdOptionsView(context, nativeAd,nativeAdLayout);
+        adChoicesContainer.removeAllViews();
+        adChoicesContainer.addView(adOptionsView, 0);
 
-        ImageView nativeAdIcon = adView.findViewById(R.id.native_ad_icon);
-
+        MediaView nativeAdMedia = adView.findViewById(R.id.native_ad_media);
+        AdIconView nativeAdIcon = adView.findViewById(R.id.native_ad_icon);
         TextView nativeAdTitle = adView.findViewById(R.id.native_ad_title);
-        ImageView nativeAdMedia = adView.findViewById(R.id.native_ad_media);
-
         TextView nativeAdBody = adView.findViewById(R.id.native_ad_body);
         Button nativeAdCallToAction = adView.findViewById(R.id.native_ad_call_to_action);
 
-        NativeAd.downloadAndDisplayImage(nativeAd.getAdIcon(), nativeAdIcon);
-        NativeAd.downloadAndDisplayImage(nativeAd.getAdCoverImage(), nativeAdMedia);
+//        NativeAd.downloadAndDisplayImage(nativeAd.getAdIcon(), nativeAdIcon);
+//        NativeAd.downloadAndDisplayImage(nativeAd.getAdCoverImage(), nativeAdMedia);
 
-        nativeAdTitle.setText(nativeAd.getAdTitle());
-        nativeAdBody.setText(nativeAd.getAdBody());
+        nativeAdTitle.setText(nativeAd.getAdvertiserName());
+        nativeAdBody.setText(nativeAd.getAdBodyText());
         nativeAdCallToAction.setVisibility(nativeAd.hasCallToAction() ? View.VISIBLE : View.INVISIBLE);
         nativeAdCallToAction.setText(nativeAd.getAdCallToAction());
 
         List<View> clickableViews = new ArrayList<>();
 
+        boolean isIconClick = false;
         if (null != adModel && adModel.adClickInvalid == 0) {
             if (adModel.titleClickable == 1) {
                 Logger.d("facebook title可点");
@@ -146,7 +158,8 @@ public class FacebookAdLoad implements AdLoad {
 
             if (adModel.iconClickable == 1) {
                 Logger.d("facebook icon可点");
-                clickableViews.add(nativeAdIcon);
+                isIconClick = true;
+//                clickableViews.add(nativeAdIcon);
             }
 
             if (adModel.descClickable == 1) {
@@ -156,12 +169,17 @@ public class FacebookAdLoad implements AdLoad {
 
             if (new Random().nextInt(100) <= adModel.coverRate) {
                 Logger.d("facebook 大图可点");
-                clickableViews.add(nativeAdMedia);
+//                clickableViews.add(nativeAdMedia);
             }
         }
 
         clickableViews.add(nativeAdCallToAction);
-        nativeAd.registerViewForInteraction(nativeAdCallToAction, clickableViews);
+
+//        if(isIconClick){
+            nativeAd.registerViewForInteraction(nativeAdCallToAction,nativeAdMedia,nativeAdIcon,clickableViews);
+//        }else{
+//            nativeAd.registerViewForInteraction(nativeAdCallToAction,nativeAdMedia,clickableViews);
+//        }
 
 //        if (adModel != null && adModel.adClickInvalid == 1) {
 //            Random random = new Random();

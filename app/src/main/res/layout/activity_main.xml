@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.tushu.sdk.ad.AdCustom
+        android:id="@+id/ad_custom"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/h200dp"
+        android:layout_gravity="center"
+        app:ad_layout="@layout/adz_banner4"
+        app:ad_auto="false"
+        app:ad_timeId="1566"
+        app:ad_mobId="ca-app-pub-8080140584266451/6847561682"
+        app:ad_fbId="203411000521492_203443257184933" />
 
 
-</LinearLayout>
+</FrameLayout>

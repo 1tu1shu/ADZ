@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.aiming.mdt.sdk.ad.nativead.NativeAdListener;
@@ -20,7 +21,11 @@ import com.aiming.mdt.sdk.ad.nativead.NativeAdView;
 import com.aiming.mdt.sdk.bean.AdInfo;
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdError;
+import com.facebook.ads.AdIconView;
+import com.facebook.ads.AdOptionsView;
+import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
+import com.facebook.ads.NativeAdLayout;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.formats.NativeAdOptions;
@@ -48,8 +53,12 @@ import java.util.Random;
 public abstract class AdBase extends FrameLayout {
 
     protected ViewGroup ad_fl;
-    public ImageView ad_image, ad_choices, ad_icon;
+    public ImageView ad_image, ad_icon;
+    private AdIconView ad_fb_icon;
+    private MediaView ad_fb_media;
+    private com.aiming.mdt.sdk.ad.nativead.MediaView ad_adt_media;
     public TextView ad_title, ad_desc, ad_open;
+    private LinearLayout ad_choices;
     protected com.aiming.mdt.sdk.ad.nativead.NativeAd mNativeAd;
     protected NativeAdView mNativeAdView;
 
@@ -57,9 +66,6 @@ public abstract class AdBase extends FrameLayout {
     protected int btnColor, bgColor;
     protected int layout;
     protected boolean adAuto;
-    protected boolean isReady;
-
-    protected List<View> registerViews;
 
     private View view;
 
@@ -80,22 +86,7 @@ public abstract class AdBase extends FrameLayout {
     public AdBase(@NonNull Context context) {
         super(context);
         initBaseViews();
-//        initViews();
-    }
-
-//    public void loadPreAd(String adTimeId){
-//        this.adTimeId = adTimeId;
-//        loadAd(getContext());
-//    }
-
-
-    //预加载
-    public void loadPreAd(String fbId, String adMobId) {
-        this.adFbId = fbId;
-        this.adMobId = adMobId;
-        adAuto = false;
-        initBaseViews();
-        loadAd(getContext(), true);
+        initViews();
     }
 
     public AdBase(@NonNull Context context, @Nullable AttributeSet attrs) {
@@ -105,8 +96,9 @@ public abstract class AdBase extends FrameLayout {
 //           if (null != ad_open) ad_open.setBackgroundColor(btnColor);
 //        setBackgroundColor(bgColor);
         initViews();
-
     }
+
+    //TO预加载
 
     protected void initViews() {
 
@@ -117,6 +109,9 @@ public abstract class AdBase extends FrameLayout {
         addView(view);
         ad_fl = view.findViewById(R.id.ad_fl);
         ad_icon = view.findViewById(R.id.ad_icon);
+        ad_fb_icon = view.findViewById(R.id.ad_fb_icon);
+        ad_fb_media = view.findViewById(R.id.ad_fb_media);
+        ad_adt_media = view.findViewById(R.id.ad_adt_media);
         ad_choices = view.findViewById(R.id.ad_choices);
         ad_image = view.findViewById(R.id.ad_image);
         ad_title = view.findViewById(R.id.ad_title);
@@ -125,7 +120,6 @@ public abstract class AdBase extends FrameLayout {
         setVisibility(GONE);
         if (adAuto) loadAd(getContext());
     }
-
 
     private void initAttrs(AttributeSet attrs) {
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.AdView);
@@ -141,70 +135,24 @@ public abstract class AdBase extends FrameLayout {
         a.recycle();
     }
 
-    public void setRegisterViews(List<View> views) {
-        this.registerViews = views;
-    }
-
-    public List<View> getRegisterViews() {
-        return registerViews;
-    }
-
-    private void registerView() {
-        List<View> views = getRegisterViews();
-        if (null == views) {
-            views = new ArrayList<>();
-
-            AdModel adModel = AdUtil.getAdModel(adFbId);
-            if (adModel.adClickInvalid == 0) {
-                if (null != ad_icon && adModel.iconClickable == 1) views.add(ad_icon);
-                if (null != ad_image && new Random().nextInt(100) <= adModel.coverRate) views.add(ad_image);
-                if (null != ad_title && adModel.titleClickable == 1) views.add(ad_title);
-                if (null != ad_desc && adModel.descClickable == 1) views.add(ad_desc);
-            }
-
-            if (null != ad_open) views.add(ad_open);
-
-            mNativeAdView.setCallToActionViews(views);
-        }
-    }
-
     protected abstract int getLayout();
 
     public void loadAd(Context context) {
         if(null!=adTimeId) {
             loadAdt(context);
         }else {
-            loadAd(context, false);
+            loadAdc(context);
         }
     }
 
-    public void loadAd(Context context, boolean isPrepare) {
-//        View view = MainApplication.getInstance().adPreMap.get(adTimeId);
-//        if(null!=view&&getChildCount()<=0){
-//            addView(view);
-//        }else {
-//            loadAdt(context);
-//        }
-
-//        if (null != adFbId) {
-//            String adFbId2 = AdUtil.getAdModel(adFbId).screenPlacementId;
-//            if (!TextUtils.isEmpty(adFbId2)) {
-//                Log.e("zzz", "Facebook拿到网络ID" + adFbId2);
-//                loadNativeAd(adFbId2, isPrepare);
-//            } else {
-//                Log.e("zzz", "Facebook用默认ID" + adFbId);
-//                loadNativeAd(adFbId, isPrepare);
-//            }
-//        } else if (null != adMobId) {
-//            loadGoogleAd(isPrepare);
-//        }
+    public void loadAdc(Context context) {
 
         int adCode = SharedPref.getInt(context, SharedPref.LOAD_AD_CODE, 1);
         if (adCode % 2 == 0) {
             Logger.d("加载的admob广告");
             SharedPref.setInt(context, SharedPref.LOAD_AD_CODE, ++adCode);
             if (null != adMobId) {
-                loadGoogleAd(isPrepare);
+                loadGoogleAd();
             }
         } else {
             Logger.d("加载的facebook广告");
@@ -213,15 +161,15 @@ public abstract class AdBase extends FrameLayout {
                 String adFbId2 = AdUtil.getAdModel(adFbId).screenPlacementId;
                 if (!TextUtils.isEmpty(adFbId2)) {
                     Log.e("zzz", "Facebook拿到网络ID" + adFbId2);
-                    loadNativeAd(adFbId2, isPrepare);
+                    loadNativeAd(adFbId2);
                 } else {
                     Log.e("zzz", "Facebook用默认ID" + adFbId);
-                    loadNativeAd(adFbId, isPrepare);
+                    loadNativeAd(adFbId);
                 }
             }
         }
-    }
 
+    }
 
     protected void loadAdt(final Context context) {
         if (null == adTimeId) {
@@ -229,20 +177,22 @@ public abstract class AdBase extends FrameLayout {
         }
         Log.e("zzzadt开始加载", adTimeId);
         String adId = adTimeId;
+
+        mNativeAdView = new NativeAdView(context);
         mNativeAd = new com.aiming.mdt.sdk.ad.nativead.NativeAd(context, adId);
         mNativeAd.setListener(new NativeAdListener() {
             @Override
             public void onADReady(AdInfo adInfo) {
                 Log.e("zzzadt", "加载成功-" + adInfo.getType());
-                mNativeAdView = mNativeAd.getNativeAdView(context);
+
                 if (null != ad_title) ad_title.setText(adInfo.getTitle());
                 if (null != ad_desc) ad_desc.setText(adInfo.getDesc());
                 if (null != ad_open) ad_open.setText(adInfo.getCallToActionText());
-                if (null != ad_image && adInfo.getImg() != null && adInfo.getImg().getUrl() != null) {
-                    Picasso.with(context).load(adInfo.getImg().getUrl()).into(ad_image);
-                }
+//                if (null != ad_image && adInfo.getImg() != null && adInfo.getImg().getUrl() != null) {
+//                    Picasso.get().load(adInfo.getImg().getUrl()).into(ad_image);
+//                }
                 if (null != ad_icon && adInfo.getIconUrl() != null) {
-                    Picasso.with(context).load(adInfo.getIconUrl()).into(ad_icon);
+                    Picasso.get().load(adInfo.getIconUrl()).into(ad_icon);
                 }
                 setVisibility(VISIBLE);
                 if (view.getParent() != null) {
@@ -251,8 +201,17 @@ public abstract class AdBase extends FrameLayout {
 //                if(adInfo.getType()==2&&null!=ad_choices){
 //                    ad_choices.setVisibility(VISIBLE);
 //                }
-                mNativeAdView.addAdView(view);
-                registerView();
+                mNativeAdView.addView(view);
+                List<View> views = new ArrayList<>();
+                AdModel adModel = AdUtil.getAdModel(adFbId);
+                if (adModel.adClickInvalid == 0) {
+                    if (null != ad_icon && adModel.iconClickable == 1) views.add(ad_icon);
+//                    if (null != ad_image && new Random().nextInt(100) <= adModel.coverRate) views.add(ad_image);
+                    if (null != ad_title && adModel.titleClickable == 1) views.add(ad_title);
+                    if (null != ad_desc && adModel.descClickable == 1) views.add(ad_desc);
+                }
+                if (null != ad_open) views.add(ad_open);
+                mNativeAdView.setCallToActionViews(mNativeAd,ad_adt_media,views);
                 addView(mNativeAdView);
                 onAdLoad(adInfo.getType());
             }
@@ -267,13 +226,13 @@ public abstract class AdBase extends FrameLayout {
 
             @Override
             public void onADFail(String msg) {
-                Log.e("zzzadt加载出错" + adFbId, msg);
+                Log.e("zzzadt加载出错" + adTimeId, msg);
                 if (adListener != null) {
                     adListener.onError(msg);
                 }
                 JSONObject jsonObj = new JSONObject();
                 try {
-                    jsonObj.put("adId", adFbId);
+                    jsonObj.put("adId", adTimeId);
                     jsonObj.put("errorMsg", msg);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -315,73 +274,82 @@ public abstract class AdBase extends FrameLayout {
     private NativeAd fbAd;
 
     public void loadNativeAd(final String adFbId) {
-        loadNativeAd(adFbId, false);
-    }
-
-    public void loadNativeAd(final String adFbId, final boolean isPrepare) {
 //        String adId = "1805011946473276_1805034216471049";
         Log.e("zzz", "加载Facebook-" + adFbId);
         fbAd = new NativeAd(getContext(), adFbId);
-        fbAd.setAdListener(new com.facebook.ads.AdListener() {
+        fbAd.setAdListener(new com.facebook.ads.NativeAdListener() {
             @Override
             public void onAdLoaded(Ad ad) {
 
-//                if (null != fbAd) {
-//                    fbAd.unregisterView();
-//                }
+                if (fbAd == null || fbAd != ad) {
+                    return;
+                }
 
-                String titleForAd = fbAd.getAdTitle();
-                NativeAd.Image coverImage = fbAd.getAdCoverImage();
-                NativeAd.Image adIcon = fbAd.getAdIcon();
-                NativeAd.Image choicesIcon = fbAd.getAdChoicesIcon();
-//              String socialContextForAd = nativeAd.getAdSocialContext();
+                fbAd.unregisterView();
+
+                // Add the Ad view into the ad container.
+                NativeAdLayout nativeAdLayout = new NativeAdLayout(getContext());
+//                nativeAdLayout.addView(view);
+                if (null!=view&&view.getParent() != null) {
+                    ((FrameLayout) view.getParent()).removeAllViews();
+                    nativeAdLayout.addView(view);
+                    addView(nativeAdLayout);
+                }
+
+                // Add the AdOptionsView
+                AdOptionsView adOptionsView = new AdOptionsView(getContext(), fbAd, nativeAdLayout);
+                ad_choices.removeAllViews();
+                ad_choices.addView(adOptionsView, 0);
+
+                String titleForAd = fbAd.getAdvertiserName();
                 String titleForAdButton = fbAd.getAdCallToAction();
-                String textForAdBody = fbAd.getAdBody();
+                String textForAdBody = fbAd.getAdBodyText();
+//                NativeAd.Image coverImage = fbAd.getAdCoverImage();
+//                NativeAd.Image adIcon = fbAd.getAdIcon();
+//                NativeAd.Image choicesIcon = fbAd.getAdChoicesIcon();
+//              String socialContextForAd = nativeAd.getAdSocialContext();
 
                 if (null != ad_title) ad_title.setText(titleForAd);
                 if (null != ad_desc) ad_desc.setText(textForAdBody);
                 if (null != ad_open) ad_open.setText(titleForAdButton);
 
-                if (null != ad_icon && null != adIcon) NativeAd.downloadAndDisplayImage(adIcon, ad_icon);
-                if (null != ad_image && null != coverImage) NativeAd.downloadAndDisplayImage(coverImage, ad_image);
-                if (null != ad_choices  && null != choicesIcon) {
-                    ad_choices.setVisibility(VISIBLE);
-                    NativeAd.downloadAndDisplayImage(choicesIcon, ad_choices);
-                }
-
-                if(!isPrepare){
-                    setVisibility(VISIBLE);
-                }
+//                if (null != ad_icon && null != adIcon) NativeAd.downloadAndDisplayImage(adIcon, ad_icon);
+//                if (null != ad_image && null != coverImage) NativeAd.downloadAndDisplayImage(coverImage, ad_image);
+//                if (null != ad_choices  && null != choicesIcon) {
+//                    ad_choices.setVisibility(VISIBLE);
+//                    NativeAd.downloadAndDisplayImage(choicesIcon, ad_choices);
+//                }
 
                 List<View> views = new ArrayList<>();
 
+                boolean isIconClick = false;
+
                 AdModel adModel = AdUtil.getAdModel(adFbId);
                 if(adModel.adClickInvalid==0) {
-                    if (null != ad_icon && adModel.iconClickable==1) views.add(ad_icon);
-                    if (null != ad_image && new Random().nextInt(100) <= adModel.coverRate) views.add(ad_image);
+//                    if (null != ad_icon && adModel.iconClickable==1) isIconClick = true;
+//                    if (null != ad_image && new Random().nextInt(100) <= adModel.coverRate) views.add(ad_image);
                     if (null != ad_title && adModel.titleClickable==1) views.add(ad_title);
                     if (null != ad_desc && adModel.descClickable==1) views.add(ad_desc);
                 }
 
                 if (null != ad_open) views.add(ad_open);
 
-                if(!views.isEmpty()) {
-                    fbAd.registerViewForInteraction(ad_open, views);
-                }else{
-                    fbAd.registerViewForInteraction(ad_open);
-                }
+//                if(isIconClick){
+                    fbAd.registerViewForInteraction(ad_open,ad_fb_media,ad_fb_icon,views);
+//                }else{
+//                    fbAd.registerViewForInteraction(ad_open,ad_fb_media,views);
+//                }
 
                 if (adListener != null) {
                     adListener.onAdLoad(2);
                 }
 
-                setReady(true);
             }
 
             @Override
             public void onError(Ad ad, AdError adError) {
                 Log.e("zzz", "Facebook加载失败-" + adFbId + "错误：" + adError.getErrorMessage());
-                loadGoogleAd(isPrepare);
+                loadGoogleAd();
                 if (adListener != null) {
                     adListener.onError(adError.getErrorMessage());
                 }
@@ -403,22 +371,20 @@ public abstract class AdBase extends FrameLayout {
             }
 
             @Override
-            public void onLoggingImpression(Ad ad) {
-            }
+            public void onLoggingImpression(Ad ad) { }
+            @Override
+            public void onMediaDownloaded(Ad ad) { }
         });
         fbAd.loadAd(NativeAd.MediaCacheFlag.ALL);
     }
 
-    public void loadGoogleAd(Context context, String adId) {
-        loadGoogleAd(context, adId, false);
-    }
 
-    public void loadGoogleAd(boolean isPrepare) {
-        loadGoogleAd(getContext(), adMobId, isPrepare);
+    public void loadGoogleAd() {
+        loadGoogleAd(getContext(), adMobId);
     }
 
     //    ca-app-pub-8080140584266451/9368166904
-    public void loadGoogleAd(final Context context, final String adId, final boolean isPrepare) {
+    public void loadGoogleAd(final Context context, final String adId) {
         Log.e("zzz", "加载Google-" + adId);
         AdLoader adLoader = new AdLoader.Builder(context, adId)
                 .forUnifiedNativeAd(new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
@@ -454,16 +420,11 @@ public abstract class AdBase extends FrameLayout {
                         if (adModel.adClickInvalid == 0) {
                             if (null != ad_title && adModel.titleClickable == 1) adView.setHeadlineView(ad_title);
                             if (null != ad_desc && adModel.descClickable == 1) adView.setBodyView(ad_desc);
-                            if (null != ad_image && new Random().nextInt(100) <= adModel.coverRate)
-                                adView.setImageView(ad_image);
+                            if (null != ad_image && new Random().nextInt(100) <= adModel.coverRate) adView.setImageView(ad_image);
                             if (null != ad_icon && adModel.iconClickable == 1) adView.setIconView(ad_icon);
                         }
 
                         if (null != ad_open) adView.setCallToActionView(ad_open);
-
-                        if (!isPrepare) {
-                            setVisibility(VISIBLE);
-                        }
 
                         if (null!=view&&view.getParent() != null) {
                             ((FrameLayout) view.getParent()).removeAllViews();
@@ -471,8 +432,6 @@ public abstract class AdBase extends FrameLayout {
                             adView.setNativeAd(unifiedNativeAd);
                             addView(adView);
                         }
-
-                        setReady(true);
                     }
                 })
                 .withAdListener(new com.google.android.gms.ads.AdListener() {
@@ -519,18 +478,6 @@ public abstract class AdBase extends FrameLayout {
         adLoader.loadAd(new AdRequest.Builder().build());
     }
 
-    public boolean isReady() {
-        return isReady;
-    }
-
-    public void setReady(boolean ready) {
-        isReady = ready;
-    }
-
-    public void showAd() {
-        setVisibility(View.VISIBLE);
-    }
-
     public String getFbId() {
         return adFbId;
     }
@@ -547,4 +494,11 @@ public abstract class AdBase extends FrameLayout {
         this.adTimeId = adTimeId;
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        if (mNativeAd != null) {
+            mNativeAd.destroy(getContext());
+        }
+        super.onDetachedFromWindow();
+    }
 }

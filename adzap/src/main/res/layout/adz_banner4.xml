@@ -18,6 +18,18 @@
             android:layout_centerInParent="true"
             android:adjustViewBounds="true" />
 
+        <com.facebook.ads.MediaView
+            android:id="@+id/ad_fb_media"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center" />
+
+        <com.aiming.mdt.sdk.ad.nativead.MediaView
+            android:id="@+id/ad_adt_media"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"/>
+
         <LinearLayout
             android:id="@+id/ad_content_ll"
             android:layout_width="match_parent"
@@ -28,11 +40,22 @@
             android:orientation="horizontal"
             android:background="#CC000000">
 
-            <ImageView
-                android:id="@+id/ad_icon"
+            <FrameLayout
                 android:layout_width="@dimen/h50dp"
                 android:layout_height="@dimen/h50dp"
-                android:layout_marginLeft="@dimen/w12dp" />
+                android:layout_marginLeft="@dimen/w12dp">
+
+                <ImageView
+                    android:id="@+id/ad_icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <com.facebook.ads.AdIconView
+                    android:id="@+id/ad_fb_icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -90,7 +113,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#4EBF7B"
+        android:background="@color/adz_btn_bg"
         android:paddingBottom="@dimen/h2dp"
         android:paddingLeft="@dimen/w5dp"
         android:paddingRight="@dimen/w5dp"
@@ -101,11 +124,11 @@
         android:textStyle="bold"
         android:visibility="visible" />
 
-    <ImageView
+    <LinearLayout
         android:id="@+id/ad_choices"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:visibility="gone" />
+        android:orientation="horizontal" />
 
 </FrameLayout>
