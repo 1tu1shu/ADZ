@@ -17,7 +17,7 @@
         <activity
             android:name="com.tushu.sdk.outad.activity.AdtShowActivity"
             android:excludeFromRecents="true"
-            android:launchMode="singleInstance"/>
+            android:launchMode="singleInstance" />
     </application>
 
 </manifest>

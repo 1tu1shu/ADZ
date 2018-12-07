@@ -7,13 +7,13 @@
     <RelativeLayout
         android:id="@+id/ad_rl"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/white">
 
         <LinearLayout
             android:id="@+id/ad_ll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
             android:orientation="vertical">
 
             <FrameLayout
@@ -55,24 +55,24 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="@dimen/h200dp">
 
-                <ImageView
-                    android:id="@+id/ad_image"
+                <com.google.android.gms.ads.formats.MediaView
+                    android:id="@+id/ad_admob_media"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true" />
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal" />
 
                 <com.facebook.ads.MediaView
                     android:id="@+id/ad_fb_media"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:gravity="center" />
 
                 <com.aiming.mdt.sdk.ad.nativead.MediaView
                     android:id="@+id/ad_adt_media"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/h200dp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"/>
 
             </FrameLayout>
@@ -111,7 +111,6 @@
 
             </FrameLayout>
 
-
             <TextView
                 android:id="@+id/ad_desc"
                 android:layout_width="wrap_content"
@@ -127,35 +126,22 @@
                 android:textColor="#333"
                 android:textSize="@dimen/f16sp" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/ad_open"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/ad_open"
-                    android:layout_marginTop="@dimen/h50dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/h50dp"
-                    android:layout_gravity="bottom"
-                    android:layout_marginLeft="@dimen/w20dp"
-                    android:layout_marginRight="@dimen/w20dp"
-                    android:background="@drawable/shape_admobi"
-                    android:gravity="center"
-                    android:text="INSTALL NOW"
-                    android:fontFamily="sans-serif-medium"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/f16sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="@dimen/w20dp"
-                    android:layout_marginEnd="@dimen/w20dp" />
-
-                <android.support.v4.widget.Space
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/h30dp"/>
-
-            </LinearLayout>
-
+                android:layout_height="@dimen/h50dp"
+                android:layout_marginTop="@dimen/h30dp"
+                android:layout_marginLeft="@dimen/w30dp"
+                android:layout_marginRight="@dimen/w30dp"
+                android:layout_marginBottom="@dimen/h30dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/shape_admobi"
+                android:gravity="center"
+                android:text="INSTALL NOW"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/f16sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

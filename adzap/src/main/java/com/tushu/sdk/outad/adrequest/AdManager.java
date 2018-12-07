@@ -65,13 +65,13 @@ public class AdManager {
         int adCode = SharedPref.getInt(context, SharedPref.LOAD_AD_CODE, 1);
         if (adCode % 2 == 0) {
             //加载admob
-            Logger.d("加载的admob广告");
+            Logger.d("加载的admob广告外插");
             adCode++;
             SharedPref.setInt(context, SharedPref.LOAD_AD_CODE, adCode);
             loadAdmobAd(context, SharedPref.getString(context, SharedPref.AD_GOOGLE_ID));
         } else {
             //加载facebook
-            Logger.d("加载的facebook广告");
+            Logger.d("加载的facebook广告外插");
             adCode++;
             SharedPref.setInt(context, SharedPref.LOAD_AD_CODE, adCode);
             loadFacebookAd(context, SharedPref.getString(context, SharedPref.AD_FACEBOOK_ID));

@@ -27,6 +27,6 @@ public class AdModel {
     public long screenIntervalTime = 30000L;//广告显示间隔时间
     public int screenNum = 30;//最大显示次数
     public int screenOpen = 1;//是否展示广告  1为显示  0为不显示
-    public double screenOpenTime = 30 * 60 * 1000L;//安装后过多久可以弹广告
+    public double screenOpenTime = 1000L * 60 * 60 * 12;//安装后过多久可以弹广告
 
 }

@@ -59,6 +59,7 @@ public class AdDialog extends Dialog{
     private AdIconView ad_fb_icon;
     private MediaView ad_fb_media;
     private com.aiming.mdt.sdk.ad.nativead.MediaView ad_adt_media;
+    private com.google.android.gms.ads.formats.MediaView ad_admob_media;
     private LinearLayout ad_choices;
     private Context context;
 
@@ -125,6 +126,7 @@ public class AdDialog extends Dialog{
             ad_fb_icon = findViewById(R.id.ad_fb_icon);
             ad_fb_media = findViewById(R.id.ad_fb_media);
             ad_adt_media = findViewById(R.id.ad_adt_media);
+            ad_admob_media = findViewById(R.id.ad_admob_media);
             ad_choices = findViewById(com.tushu.sdk.R.id.ad_choices);
             ad_image = findViewById(com.tushu.sdk.R.id.ad_image);
             ad_title = findViewById(com.tushu.sdk.R.id.ad_title);
@@ -284,11 +286,11 @@ public class AdDialog extends Dialog{
 //                            adView.setCallToActionView(ad_open);
                         }
 
-                        if (null != ad_image && !unifiedNativeAd.getImages().isEmpty() && unifiedNativeAd.getImages().get(0).getDrawable() != null) {
-                            ad_image.setImageDrawable(unifiedNativeAd.getImages().get(0).getDrawable());
+//                        if (null != ad_image && !unifiedNativeAd.getImages().isEmpty() && unifiedNativeAd.getImages().get(0).getDrawable() != null) {
+//                            ad_image.setImageDrawable(unifiedNativeAd.getImages().get(0).getDrawable());
 //                            adView.setImageView(ad_image);
 
-                        }
+//                        }
                         if (null != ad_icon && unifiedNativeAd.getIcon()!= null && unifiedNativeAd.getIcon().getDrawable() !=null) {
                             ad_icon.setImageDrawable(unifiedNativeAd.getIcon().getDrawable());
 //                            adView.setIconView(ad_icon);
@@ -298,16 +300,16 @@ public class AdDialog extends Dialog{
                         if(adModel.adClickInvalid==0) {
                             if (null != ad_title && adModel.titleClickable==1)  adView.setHeadlineView(ad_title);
                             if (null != ad_desc && adModel.descClickable==1)  adView.setBodyView(ad_desc);
-                            if (null != ad_image && new Random().nextInt(100) <= adModel.coverRate) adView.setImageView(ad_image);
+                            if (null != ad_admob_media && new Random().nextInt(100) <= adModel.coverRate) adView.setMediaView(ad_admob_media);
                             if (null != ad_icon && adModel.iconClickable==1) adView.setIconView(ad_icon);
                         }
 
                         if (null != ad_open)  adView.setCallToActionView(ad_open);
 
-                        if (null!= ad_ll.getParent()) {
-                            ((FrameLayout) ad_ll.getParent()).removeAllViews();
+                        if (null!= ad_rl.getParent()) {
+                            ((FrameLayout) ad_rl.getParent()).removeAllViews();
                         }
-                        adView.addView(ad_ll);
+                        adView.addView(ad_rl);
                         adView.setNativeAd(unifiedNativeAd);
                         ad_root.addView(adView);
 
@@ -333,6 +335,10 @@ public class AdDialog extends Dialog{
 
                     @Override
                     public void onAdLoaded() {
+                    }
+
+                    @Override
+                    public void onAdOpened() {
                     }
                 })
                 .withNativeAdOptions(new NativeAdOptions.Builder()

@@ -2,113 +2,111 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ad_fl"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="1dp"
-    android:background="@drawable/shape_ad_bg">
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_ad_bg"
+    android:padding="1dp">
 
-    <FrameLayout
+
+    <ImageView
+        android:id="@+id/ad_image"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true" />
 
+    <com.google.android.gms.ads.formats.MediaView
+        android:id="@+id/ad_admob_media"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal" />
 
-        <ImageView
-            android:id="@+id/ad_image"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:adjustViewBounds="true" />
+    <com.facebook.ads.MediaView
+        android:id="@+id/ad_fb_media"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top" />
 
-        <com.facebook.ads.MediaView
-            android:id="@+id/ad_fb_media"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center" />
+    <com.aiming.mdt.sdk.ad.nativead.MediaView
+        android:id="@+id/ad_adt_media"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal" />
 
-        <com.aiming.mdt.sdk.ad.nativead.MediaView
-            android:id="@+id/ad_adt_media"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+    <LinearLayout
+        android:id="@+id/ad_content_ll"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/h60dp"
+        android:layout_gravity="bottom"
+        android:background="#CC000000"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="@dimen/h50dp"
+            android:layout_height="@dimen/h50dp"
+            android:layout_marginLeft="@dimen/w12dp">
+
+            <ImageView
+                android:id="@+id/ad_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.facebook.ads.AdIconView
+                android:id="@+id/ad_fb_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
 
         <LinearLayout
-            android:id="@+id/ad_content_ll"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/h60dp"
-            android:gravity="center_vertical"
-            android:layout_gravity="bottom"
-            android:clickable="true"
-            android:orientation="horizontal"
-            android:background="#CC000000">
-
-            <FrameLayout
-                android:layout_width="@dimen/h50dp"
-                android:layout_height="@dimen/h50dp"
-                android:layout_marginLeft="@dimen/w12dp">
-
-                <ImageView
-                    android:id="@+id/ad_icon"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <com.facebook.ads.AdIconView
-                    android:id="@+id/ad_fb_icon"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-            </FrameLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="@dimen/w10dp"
-                android:layout_marginRight="@dimen/w10dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/ad_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="line1"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/f14sp" />
-
-                <TextView
-                    android:id="@+id/ad_desc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:text="line2line2line2line2line2line2line2line2line2line2line2line2line2line2"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/f12sp" />
-
-            </LinearLayout>
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/w10dp"
+            android:layout_marginRight="@dimen/w10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/ad_open"
-                android:layout_width="wrap_content"
+                android:id="@+id/ad_title"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="@dimen/w15dp"
-                android:background="@drawable/shape_admobi"
-                android:gravity="center"
-                android:paddingTop="@dimen/h6dp"
-                android:paddingBottom="@dimen/h6dp"
-                android:paddingLeft="@dimen/w15dp"
-                android:paddingRight="@dimen/w15dp"
-                android:text="INSTALL"
-                android:textSize="@dimen/f14sp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="line1"
                 android:textColor="@color/white"
-                android:fontFamily="sans-serif-medium"/>
+                android:textSize="@dimen/f14sp" />
+
+            <TextView
+                android:id="@+id/ad_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="line2line2line2line2line2line2line2line2line2line2line2line2line2line2"
+                android:textColor="@color/white"
+                android:textSize="@dimen/f12sp" />
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/ad_open"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="@dimen/w15dp"
+            android:background="@drawable/shape_admobi"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:paddingBottom="@dimen/h6dp"
+            android:paddingLeft="@dimen/w15dp"
+            android:paddingRight="@dimen/w15dp"
+            android:paddingTop="@dimen/h6dp"
+            android:text="INSTALL"
+            android:textColor="@color/white"
+            android:textSize="@dimen/f14sp" />
 
-    </FrameLayout>
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"

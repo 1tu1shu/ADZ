@@ -32,7 +32,6 @@ import com.tushu.sdk.utils.UtilUISizeHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class ADTAdLoad implements AdLoad {
 
@@ -107,7 +106,7 @@ public class ADTAdLoad implements AdLoad {
         mNativeAdView = new NativeAdView(context);
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        adView = inflater.inflate(com.tushu.sdk.R.layout.adz_out_layout, null);
+        adView = inflater.inflate(com.tushu.sdk.R.layout.adz_out_adt_layout, null);
 
         MediaView ad_media = adView.findViewById(com.tushu.sdk.R.id.ad_media);
         final ImageView ad_close = adView.findViewById(com.tushu.sdk.R.id.ad_close);

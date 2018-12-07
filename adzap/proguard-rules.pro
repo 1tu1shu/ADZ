@@ -19,3 +19,31 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-dontwarn com.aiming.mdt.**.*
+-dontwarn com.adt.**.*
+-dontoptimize
+-dontskipnonpubliclibraryclasses
+-keepattributes *Annotation*
+#adt
+-keep class com.admuing.** { *; }
+-keep class com.aiming.mdt.** { *; }
+-keep class com.adt.** { *; }
+#R
+-keepclassmembers class **.R$* {
+    public static <fields>;
+}
+-keep public class com.google.android.gms.** {
+    public *;
+}
+-keep public class com.google.ads.** {
+    public *;
+}
+-keep class com.facebook.ads.** { *; }
+-keepattributes SourceFile,LineNumberTable
+-keepattributes JavascriptInterface
+-keep class android.webkit.JavascriptInterface {
+   *;
+}
+-keep class com.unity3d.ads.** {
+   *;
+}

@@ -32,6 +32,7 @@ import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.squareup.picasso.Picasso;
+import com.tushu.sdk.AdCacheUtil;
 import com.tushu.sdk.AdUtil;
 import com.tushu.sdk.R;
 import com.tushu.sdk.TSSDK;
@@ -56,6 +57,7 @@ public abstract class AdBase extends FrameLayout {
     public ImageView ad_image, ad_icon;
     private AdIconView ad_fb_icon;
     private MediaView ad_fb_media;
+    private com.google.android.gms.ads.formats.MediaView ad_admob_media;
     private com.aiming.mdt.sdk.ad.nativead.MediaView ad_adt_media;
     public TextView ad_title, ad_desc, ad_open;
     private LinearLayout ad_choices;
@@ -63,9 +65,8 @@ public abstract class AdBase extends FrameLayout {
     protected NativeAdView mNativeAdView;
 
     protected String adTimeId, adFbId, adMobId;
-    protected int btnColor, bgColor;
     protected int layout;
-    protected boolean adAuto;
+    protected boolean adAuto,adCache;
 
     private View view;
 
@@ -92,10 +93,21 @@ public abstract class AdBase extends FrameLayout {
     public AdBase(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         initAttrs(attrs);
-        initBaseViews();
-//           if (null != ad_open) ad_open.setBackgroundColor(btnColor);
-//        setBackgroundColor(bgColor);
-        initViews();
+        setVisibility(GONE);
+        if(adCache){
+            view = AdCacheUtil.getAdCustom(adFbId);
+            if(null!=view){
+                if(null!=view.getParent()) {
+                    ((FrameLayout) view.getParent()).removeAllViews();
+                }
+                addView(view);
+                setVisibility(VISIBLE);
+            }
+            AdCacheUtil.adShowMap.put(adFbId,false);
+        }else {
+            initBaseViews();
+            initViews();
+        }
     }
 
     //TO预加载
@@ -111,13 +123,13 @@ public abstract class AdBase extends FrameLayout {
         ad_icon = view.findViewById(R.id.ad_icon);
         ad_fb_icon = view.findViewById(R.id.ad_fb_icon);
         ad_fb_media = view.findViewById(R.id.ad_fb_media);
+        ad_admob_media = view.findViewById(R.id.ad_admob_media);
         ad_adt_media = view.findViewById(R.id.ad_adt_media);
         ad_choices = view.findViewById(R.id.ad_choices);
         ad_image = view.findViewById(R.id.ad_image);
         ad_title = view.findViewById(R.id.ad_title);
         ad_desc = view.findViewById(R.id.ad_desc);
         ad_open = view.findViewById(R.id.ad_open);
-        setVisibility(GONE);
         if (adAuto) loadAd(getContext());
     }
 
@@ -128,10 +140,9 @@ public abstract class AdBase extends FrameLayout {
         adTimeId = a.getString(R.styleable.AdView_ad_timeId);
         adFbId = a.getString(R.styleable.AdView_ad_fbId);
         adMobId = a.getString(R.styleable.AdView_ad_mobId);
-        btnColor = a.getColor(R.styleable.AdView_ad_btnColor, Color.parseColor("#17e269"));
-        bgColor = a.getColor(R.styleable.AdView_ad_bgColor, Color.parseColor("#ffffff"));
         layout = a.getResourceId(R.styleable.AdView_ad_layout, 0);
         adAuto = a.getBoolean(R.styleable.AdView_ad_auto, true);
+        adCache = a.getBoolean(R.styleable.AdView_ad_cache, false);
         a.recycle();
     }
 
@@ -149,13 +160,13 @@ public abstract class AdBase extends FrameLayout {
 
         int adCode = SharedPref.getInt(context, SharedPref.LOAD_AD_CODE, 1);
         if (adCode % 2 == 0) {
-            Logger.d("加载的admob广告");
+            Log.e("zzz","加载的admob广告-大banner");
             SharedPref.setInt(context, SharedPref.LOAD_AD_CODE, ++adCode);
             if (null != adMobId) {
                 loadGoogleAd();
             }
         } else {
-            Logger.d("加载的facebook广告");
+            Log.e("zzz","加载的facebook广告-大banner");
             SharedPref.setInt(context, SharedPref.LOAD_AD_CODE, ++adCode);
             if (null != adFbId) {
                 String adFbId2 = AdUtil.getAdModel(adFbId).screenPlacementId;
@@ -263,13 +274,6 @@ public abstract class AdBase extends FrameLayout {
         }
     }
 
-    private void onAdLoad(int type) {
-        if (adListener != null) {
-            adListener.onAdLoad(type);
-        }
-//        DotUtil.sendAD(DotUtil.AD_LOAD,type,adFbId);
-    }
-
 
     private NativeAd fbAd;
 
@@ -320,6 +324,8 @@ public abstract class AdBase extends FrameLayout {
 //                    NativeAd.downloadAndDisplayImage(choicesIcon, ad_choices);
 //                }
 
+                setVisibility(VISIBLE);
+
                 List<View> views = new ArrayList<>();
 
                 boolean isIconClick = false;
@@ -339,10 +345,7 @@ public abstract class AdBase extends FrameLayout {
 //                }else{
 //                    fbAd.registerViewForInteraction(ad_open,ad_fb_media,views);
 //                }
-
-                if (adListener != null) {
-                    adListener.onAdLoad(2);
-                }
+                onAdLoad(2);
 
             }
 
@@ -369,6 +372,8 @@ public abstract class AdBase extends FrameLayout {
                     adListener.onAdClick();
                 }
             }
+
+
 
             @Override
             public void onLoggingImpression(Ad ad) { }
@@ -405,16 +410,16 @@ public abstract class AdBase extends FrameLayout {
                             ad_open.setText(unifiedNativeAd.getCallToAction());
 //                            adView.setCallToActionView(ad_open);
                         }
-
                         if (null != ad_image && !unifiedNativeAd.getImages().isEmpty() && unifiedNativeAd.getImages().get(0).getDrawable() != null) {
                             ad_image.setImageDrawable(unifiedNativeAd.getImages().get(0).getDrawable());
 //                            adView.setImageView(ad_image);
-
                         }
                         if (null != ad_icon && unifiedNativeAd.getIcon() != null && unifiedNativeAd.getIcon().getDrawable() != null) {
                             ad_icon.setImageDrawable(unifiedNativeAd.getIcon().getDrawable());
 //                            adView.setIconView(ad_icon);
                         }
+
+                        setVisibility(VISIBLE);
 
                         AdModel adModel = AdUtil.getAdModel(adFbId);
                         if (adModel.adClickInvalid == 0) {
@@ -426,12 +431,15 @@ public abstract class AdBase extends FrameLayout {
 
                         if (null != ad_open) adView.setCallToActionView(ad_open);
 
+                        adView.setNativeAd(unifiedNativeAd);
+
                         if (null!=view&&view.getParent() != null) {
                             ((FrameLayout) view.getParent()).removeAllViews();
                             adView.addView(view);
                             adView.setNativeAd(unifiedNativeAd);
                             addView(adView);
                         }
+                        onAdLoad(1);
                     }
                 })
                 .withAdListener(new com.google.android.gms.ads.AdListener() {
@@ -442,6 +450,7 @@ public abstract class AdBase extends FrameLayout {
 //                            Log.e("zzzs","Google加载失败-"+adId+"错误："+errorCode);
 //                            loadNativeAd(adFbId);
 //                        }
+                        Log.e("zzz","Google加载失败-"+adId+"错误："+errorCode);
                         if (adListener != null) {
                             adListener.onError(errorCode + "");
                         }
@@ -466,7 +475,6 @@ public abstract class AdBase extends FrameLayout {
                     @Override
                     public void onAdLoaded() {
 //                        Log.e("zzzs","Google加载完成"+adId);
-                        onAdLoad(1);
                     }
                 })
                 .withNativeAdOptions(new NativeAdOptions.Builder()
@@ -492,6 +500,14 @@ public abstract class AdBase extends FrameLayout {
 
     public void setAdtId(String adTimeId) {
         this.adTimeId = adTimeId;
+    }
+
+
+    private void onAdLoad(int type) {
+        if (adListener != null) {
+            adListener.onAdLoad(type);
+        }
+//        DotUtil.sendAD(DotUtil.AD_LOAD,type,adFbId);
     }
 
     @Override

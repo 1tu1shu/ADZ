@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.formats.MediaView;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
@@ -93,9 +94,9 @@ public class AdmobAdLoad implements AdLoad {
         AdModel adModel = AdUtil.getAdModel(SharedPref.getString(context, SharedPref.AD_FACEBOOK_ID));
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        adView = inflater.inflate(com.tushu.sdk.R.layout.adz_out_layout, null);
+        adView = inflater.inflate(com.tushu.sdk.R.layout.adz_out_admob_layout, null);
 
-        ImageView ad_image = adView.findViewById(com.tushu.sdk.R.id.ad_image);
+        MediaView ad_media = adView.findViewById(com.tushu.sdk.R.id.ad_media);
         final ImageView ad_close = adView.findViewById(com.tushu.sdk.R.id.ad_close);
         ImageView ad_icon = adView.findViewById(com.tushu.sdk.R.id.ad_icon);
         TextView ad_title = adView.findViewById(com.tushu.sdk.R.id.ad_title);
@@ -114,10 +115,9 @@ public class AdmobAdLoad implements AdLoad {
             ad_open.setText(admobNativeAd.getCallToAction());
         }
 
-        if (null != ad_image && !admobNativeAd.getImages().isEmpty() && admobNativeAd.getImages().get(0).getDrawable() != null) {
-            ad_image.setImageDrawable(admobNativeAd.getImages().get(0).getDrawable());
-
-        }
+//        if (null != ad_image && !admobNativeAd.getImages().isEmpty() && admobNativeAd.getImages().get(0).getDrawable() != null) {
+//            ad_image.setImageDrawable(admobNativeAd.getImages().get(0).getDrawable());
+//        }
         if (null != ad_icon && admobNativeAd.getIcon() != null && admobNativeAd.getIcon().getDrawable() != null) {
             ad_icon.setImageDrawable(admobNativeAd.getIcon().getDrawable());
         }
@@ -163,7 +163,7 @@ public class AdmobAdLoad implements AdLoad {
 
             if (new Random().nextInt(100) <= adModel.coverRate) {
                 Logger.d("admob 大图可点");
-                adParentView.setImageView(ad_image);
+                adParentView.setMediaView(ad_media);
             }
         }
 

@@ -2,14 +2,12 @@
 <resources>
 
     <declare-styleable name="AdView">
-        <attr name="ad_site" format="string" />
         <attr name="ad_fbId" format="string"/>
         <attr name="ad_mobId" format="string"/>
         <attr name="ad_timeId" format="string"/>
-        <attr name="ad_btnColor" format="color" />
-        <attr name="ad_bgColor" format="color" />
         <attr name="ad_layout" format="reference"/>
         <attr name="ad_auto" format="boolean"/>
+        <attr name="ad_cache" format="boolean"/>
     </declare-styleable>
 
 

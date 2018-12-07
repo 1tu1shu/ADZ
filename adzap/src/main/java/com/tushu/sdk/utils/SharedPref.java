@@ -22,7 +22,12 @@ public final class SharedPref {
     public static final String LAST_SHOW_TIME = "last_show_time";
     public static final String SHOW_FIRST_TIME = "show_first_time";//第一次显示时间，24小时后刷新显示次数
     public static final String INSTALL_TIME = "install_time";//安装时间
+
+
+    //广告逻辑
     public static final String LOAD_AD_CODE = "load_ad_code";
+    public static final String LOAD_AD_FULL_SCREEN = "load_ad_full_screen";//加载广告类型  基数为插屏广告  偶数为原生全屏广告
+    public static final String LOAD_AD_PRELOAD = "load_ad_preload";//加载广告类型  基数为facebook  偶数为admob
 
     private static final HashMap<String, SharedPreferences> sSharedPrefs = new HashMap<String, SharedPreferences>();
 

@@ -30,9 +30,15 @@ public class TSSDK {
     public static boolean isAdtInit;
 
 
+    public static void init(Application app){
+        TSSDK.app = app;
+        AudienceNetworkAds.initialize(app);
+    }
+
     public static void init(Application app,String fbId,String admobId){
 
         TSSDK.app = app;
+//      AudienceNetworkAds.isInAdsProcess(app);
         AudienceNetworkAds.initialize(app);
 
         SharedPref.setString(app, SharedPref.AD_FACEBOOK_ID, fbId);
@@ -68,7 +74,7 @@ public class TSSDK {
     }
 
 
-    public static void initAdt(Activity activity,String adtKey){
+    public static void initSplash(Activity activity,String adtKey){
         AdUtil.getServerData(activity);
         if(null!=adtKey) {
             AdtAds.init(activity, adtKey, new Callback() {

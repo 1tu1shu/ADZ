@@ -70,7 +70,11 @@ public class AdInterstitial {
         loadAdmob(admobId,isPreLoad);
     }
 
-    public void preLoadFbAd(String adFbId,String admobId){
+    public void preLoadFb(String adFbId){
+        preLoadFb(adFbId,null);
+    }
+
+    public void preLoadFb(String adFbId,String admobId){
         this.adFbId = adFbId;
         this.admobId = admobId;
         isPreLoad = true;
@@ -81,7 +85,7 @@ public class AdInterstitial {
         loadAdmob(admobId,false);
     }
 
-    public void loadAdmob(String admobId, final boolean isPreLoad){
+    public void loadAdmob(final String admobId, final boolean isPreLoad){
         admobAd = new com.google.android.gms.ads.InterstitialAd(context);
         admobAd.setAdUnitId(admobId);
         admobAd.setImmersiveMode(true);
@@ -91,7 +95,7 @@ public class AdInterstitial {
                 if (null!=admobAd&&admobAd.isLoaded()&&!isPreLoad) {
                     admobAd.show();
                 } else {
-                    Log.d("TAG", "The interstitial wasn't loaded yet.");
+                    Log.e("zzz", "GoogleAd缓存成功"+admobId);
                 }
                 if(adListener != null) adListener.onAdLoad();
             }
@@ -116,7 +120,7 @@ public class AdInterstitial {
         loadNativeAd(fbId,admobId,false);
     }
 
-    public void loadNativeAd(String fbId, final String admobId, final boolean isPreLoad) {
+    public void loadNativeAd(final String fbId, final String admobId, final boolean isPreLoad) {
 //        if (null == fbAd) {
             String adFbId2 = AdUtil.getAdModel(fbId).screenPlacementId;
             if(TextUtils.isEmpty(adFbId2)){
@@ -134,19 +138,23 @@ public class AdInterstitial {
                 @Override
                 public void onError(Ad ad, AdError adError) {
                     Log.e("zzz", "FaceBookAd插屏出错"+adError.getErrorMessage());
-                    Log.e("zzz", "加载google插屏-"+admobId);
-                    loadAdmob(admobId, isPreLoad);
+//                    if(!isPreLoad&&null!=admobId) {
+                        Log.e("zzz", "加载google插屏-"+admobId);
+                        loadAdmob(admobId, isPreLoad);
+//                    }
                 }
 
                 @Override
                 public void onAdLoaded(Ad ad) {
-                    Log.e("zzz","加载Facebook插屏成功");
                     if (null != fbAd && fbAd.isAdLoaded()&&!isPreLoad) {
                         try {
                             fbAd.show();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                    }
+                    if(isPreLoad){
+                        Log.e("zzz","Facebook缓存成功"+fbId);
                     }
                 }
 
