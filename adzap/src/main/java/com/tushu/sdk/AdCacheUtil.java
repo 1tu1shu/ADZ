@@ -31,13 +31,13 @@ public class AdCacheUtil {
 
 
     public static void saveAdFbCustom(Context context, final int layoutR, final String fbId, String admobId){
-        Log.e("zzz","预加载原生广告");
 
         boolean isShow = false;
         if (null!=adShowMap.get(fbId)){
             isShow = adShowMap.get(fbId);
         }
         if(!isShow) {
+            Log.e("zzz","预加载原生广告");
             final AdCustom adCustom = new AdCustom(context) {
                 @Override
                 protected int getLayout() {

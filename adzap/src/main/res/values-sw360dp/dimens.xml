@@ -82,6 +82,7 @@
     <dimen name="h150dp">150dp</dimen>
     <dimen name="h160dp">160dp</dimen>
     <dimen name="h170dp">170dp</dimen>
+    <dimen name="h180dp">180dp</dimen>
     <dimen name="h200dp">200dp</dimen>
     <dimen name="h220dp">220dp</dimen>
     <dimen name="h230dp">230dp</dimen>

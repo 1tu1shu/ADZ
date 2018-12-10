@@ -6,18 +6,12 @@
     android:background="@drawable/shape_ad_bg"
     android:padding="1dp">
 
-
-    <ImageView
-        android:id="@+id/ad_image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="true" />
-
     <com.google.android.gms.ads.formats.MediaView
         android:id="@+id/ad_admob_media"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:gravity="top" />
 
     <com.facebook.ads.MediaView
         android:id="@+id/ad_fb_media"
@@ -29,7 +23,8 @@
         android:id="@+id/ad_adt_media"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:gravity="top"/>
 
     <LinearLayout
         android:id="@+id/ad_content_ll"

@@ -158,6 +158,9 @@ public abstract class AdBase extends FrameLayout {
 
     public void loadAdc(Context context) {
 
+        loadGoogleAd();
+
+        /**
         int adCode = SharedPref.getInt(context, SharedPref.LOAD_AD_CODE, 1);
         if (adCode % 2 == 0) {
             Log.e("zzz","加载的admob广告-大banner");
@@ -178,7 +181,7 @@ public abstract class AdBase extends FrameLayout {
                     loadNativeAd(adFbId);
                 }
             }
-        }
+        }**/
 
     }
 
@@ -410,10 +413,10 @@ public abstract class AdBase extends FrameLayout {
                             ad_open.setText(unifiedNativeAd.getCallToAction());
 //                            adView.setCallToActionView(ad_open);
                         }
-                        if (null != ad_image && !unifiedNativeAd.getImages().isEmpty() && unifiedNativeAd.getImages().get(0).getDrawable() != null) {
-                            ad_image.setImageDrawable(unifiedNativeAd.getImages().get(0).getDrawable());
+//                        if (null != ad_image && !unifiedNativeAd.getImages().isEmpty() && unifiedNativeAd.getImages().get(0).getDrawable() != null) {
+//                            ad_image.setImageDrawable(unifiedNativeAd.getImages().get(0).getDrawable());
 //                            adView.setImageView(ad_image);
-                        }
+//                        }
                         if (null != ad_icon && unifiedNativeAd.getIcon() != null && unifiedNativeAd.getIcon().getDrawable() != null) {
                             ad_icon.setImageDrawable(unifiedNativeAd.getIcon().getDrawable());
 //                            adView.setIconView(ad_icon);
@@ -425,13 +428,12 @@ public abstract class AdBase extends FrameLayout {
                         if (adModel.adClickInvalid == 0) {
                             if (null != ad_title && adModel.titleClickable == 1) adView.setHeadlineView(ad_title);
                             if (null != ad_desc && adModel.descClickable == 1) adView.setBodyView(ad_desc);
-                            if (null != ad_image && new Random().nextInt(100) <= adModel.coverRate) adView.setImageView(ad_image);
+//                            new Random().nextInt(100) <= adModel.coverRate
+                            if (null != ad_admob_media) adView.setMediaView(ad_admob_media);
                             if (null != ad_icon && adModel.iconClickable == 1) adView.setIconView(ad_icon);
                         }
 
                         if (null != ad_open) adView.setCallToActionView(ad_open);
-
-                        adView.setNativeAd(unifiedNativeAd);
 
                         if (null!=view&&view.getParent() != null) {
                             ((FrameLayout) view.getParent()).removeAllViews();

@@ -53,6 +53,7 @@ public class AdBanner extends FrameLayout {
         if(null!=adTimeId){
             loadAdtAd();
         }else{
+            /**
             int adCode = SharedPref.getInt(getContext(), SharedPref.LOAD_AD_CODE, 1);
             if (adCode % 2 == 0) {
                 Log.e("zzz","加载的admob广告-小banner");
@@ -62,7 +63,8 @@ public class AdBanner extends FrameLayout {
                 Log.e("zzz","加载的facebook广告-小banner");
                 SharedPref.setInt(getContext(), SharedPref.LOAD_AD_CODE, ++adCode);
                 loadFbAd();
-            }
+            }**/
+            loadAdmobAd();
         }
     }
 

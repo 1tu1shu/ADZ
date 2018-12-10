@@ -25,24 +25,24 @@ public class BatteryStatusReceiver extends BroadcastReceiver {
     /**
      * 充电连接
      */
-    public void batteryConnected() { }
+    public void batteryConnected(Context context) { }
 
     /**
      * 充电断开
      */
-    public void batteryDisconnected() { }
+    public void batteryDisconnected(Context context) { }
 
     /**
      * 充电状态改变
      */
-    public void batteryChange() { }
+    public void batteryChange(Context context,Intent intent) { }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(ACTION_POWER_CONNECTED)) {
-            batteryConnected();
+            batteryConnected(context);
         } else if (intent.getAction().equals(ACTION_POWER_DISCONNECTED)) {
-            batteryDisconnected();
+            batteryDisconnected(context);
         } else if (intent.getAction().equals(Intent.ACTION_BATTERY_CHANGED)) {
 
             int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
@@ -64,7 +64,7 @@ public class BatteryStatusReceiver extends BroadcastReceiver {
                 }
             }
 
-            batteryChange();
+            batteryChange(context,intent);
         }
 
     }

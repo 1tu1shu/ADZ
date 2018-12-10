@@ -105,6 +105,7 @@
     <dimen name="h150dp">123.902435dp</dimen>
     <dimen name="h160dp">132.1626dp</dimen>
     <dimen name="h170dp">140.42276dp</dimen>
+    <dimen name="h180dp">148.44155dp</dimen>
     <dimen name="h200dp">165.20325dp</dimen>
     <dimen name="h220dp">181.72357dp</dimen>
     <dimen name="h230dp">189.67532dp</dimen>

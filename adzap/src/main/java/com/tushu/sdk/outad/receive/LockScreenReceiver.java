@@ -22,17 +22,18 @@ public class LockScreenReceiver extends BroadcastReceiver {
     /**
      * 屏幕关闭
      */
-    public void screenOFF() { }
+    public void screenOFF(Context context) { }
 
     /**
      * 屏幕亮起
      */
-    public void screenON() { }
+    public void screenON(Context context) {
+    }
 
     /**
      * 屏幕解锁
      */
-    public void screenPresent() { }
+    public void screenPresent(Context context) { }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -42,17 +43,17 @@ public class LockScreenReceiver extends BroadcastReceiver {
             //关闭锁屏
             Logger.d("ACTION_SCREEN_OFF");
             AdManager.getInstence().setHasUnLock(false);
-            screenOFF();
+            screenOFF(context);
         } else if (mAction.equals(Intent.ACTION_SCREEN_ON)) {
             //开屏
             Logger.d("ACTION_SCREEN_ON");
-            screenON();
+            screenON(context);
         } else if (mAction.equals(Intent.ACTION_USER_PRESENT)) {
             //解锁
             Logger.d("ACTION_SCREEN_ON");
             AdManager.getInstence().setHasUnLock(true);
             outAd(context);
-            screenPresent();
+            screenPresent(context);
         }
     }
 

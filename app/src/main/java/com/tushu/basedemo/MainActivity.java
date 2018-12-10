@@ -40,7 +40,9 @@ public class MainActivity extends AppCompatActivity {
 //        new AdDialog(MainActivity.this).setAdInfo("203411000521492_203443257184933","ca-app-pub-8080140584266451/6847561682").loadGoogleAd();
         //gradlew clean generatePomFileForReleasePublication build bintrayUpload -PbintrayUser=zjh666 -PbintrayKey=d887fe4c06f0404a4ca4dd93fe1e83f2feb5ee21 -PdryRun=false
 
-        AdFullScreenUtil.preLoadInterAD(this,"ca-app-pub-8080140584266451/2484945776","2144897019126127_2299743200308174");
+//        ca-app-pub-8080140584266451/5833549257
+//        ca-app-pub-8080140584266451/2484945776
+        AdFullScreenUtil.preLoadInterAd(this,"2144897019126127_2299743200308174","ca-app-pub-8080140584266451/2484945776");
 
 
         findViewById(R.id.test_inter).setOnClickListener(new View.OnClickListener() {
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 //                AdFullScreenUtil.showInterAD(MainActivity.this);
                 AdInterstitial.getInstance(MainActivity.this).showAd();
+                AdFullScreenUtil.preLoadInterAd(MainActivity.this,"2144897019126127_2299743200308174","ca-app-pub-8080140584266451/2484945776");
             }
         });
 
