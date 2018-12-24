@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
 import android.text.TextUtils;
 
 import com.tushu.sdk.AdUtil;
 import com.tushu.sdk.ad.AdModel;
 import com.tushu.sdk.outad.OutADDBHelper;
+import com.tushu.sdk.outad.activity.WebGameActivity;
 import com.tushu.sdk.outad.adrequest.AdManager;
 import com.tushu.sdk.utils.DotUtil;
 import com.tushu.sdk.utils.Logger;
@@ -28,33 +30,35 @@ public class NetReceive extends BroadcastReceiver {
                         if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
                             Logger.d("当前WiFi连接可用 ");
                             AdManager.getInstence().setHasNet(true);
-//                            int netCode = SharedPref.getInt(context, SharedPref.NET_STATE, 0);
-//                            if (netCode != 1) {
-//                                SharedPref.setInt(context, SharedPref.NET_STATE, 1);
-                            checkAdShow(context);
-//                            }
+                            int netCode = SharedPref.getInt(context, SharedPref.NET_STATE, 1);
+                            if (netCode != 1) {
+                                checkAdShow(context);
+                            }
+                            SharedPref.setInt(context, SharedPref.NET_STATE, 1);
                         } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                             Logger.d("当前移动网络连接可用 ");
                             AdManager.getInstence().setHasNet(true);
-//                            int netCode = SharedPref.getInt(context, SharedPref.NET_STATE, 0);
-//                            if (netCode != 2) {
-//                                SharedPref.setInt(context, SharedPref.NET_STATE, 2);
-                            checkAdShow(context);
-//                            }
+                            int netCode = SharedPref.getInt(context, SharedPref.NET_STATE, 2);
+                            if (netCode != 2) {
+                                checkAdShow(context);
+                            }
+                            SharedPref.setInt(context, SharedPref.NET_STATE, 2);
                         }
                     } else {
                         Logger.d("当前没有网络连接，请确保你已经打开网络 ");
                         AdManager.getInstence().setHasNet(false);
+                        SharedPref.setInt(context, SharedPref.NET_STATE, 0);
                     }
                 } else {
                     Logger.d("当前没有网络连接，请确保你已经打开网络 ");
                     AdManager.getInstence().setHasNet(false);
+                    SharedPref.setInt(context, SharedPref.NET_STATE, 0);
                 }
             }
         }
     }
 
-    private void checkAdShow(Context context) {
+    private void checkAdShow(final Context context) {
         Logger.d("开始进入判断 ");
         DotUtil.sendEvent(DotUtil.OUT_AD_NETCHANGE_ACTION);
 
@@ -88,7 +92,17 @@ public class NetReceive extends BroadcastReceiver {
             DotUtil.sendEvent(DotUtil.OUT_AD_NETCHANGE_JUDGE);
             SharedPref.setLong(context, SharedPref.LAST_SHOW_TIME, System.currentTimeMillis());
 
-            AdManager.getInstence().loadAd(context);
+            Logger.d("设置加载次数:" + showNum);
+//            if(showNum%2==0) {
+                AdManager.getInstence().loadAd(context);
+//            }else{
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        AdManager.getInstence().loadGame(context);
+//                    }
+//                },3000);
+//            }
 
             if (time == 0) {
                 SharedPref.setLong(context, SharedPref.SHOW_FIRST_TIME, System.currentTimeMillis());

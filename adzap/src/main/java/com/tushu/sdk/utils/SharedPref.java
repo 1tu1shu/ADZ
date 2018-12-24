@@ -120,8 +120,7 @@ public final class SharedPref {
         return getFloatPrivate(c, key, defaultValue, null);
     }
 
-    public static float getFloatPrivate(Context c, String key, float defaultValue,
-                                        final String fileName) {
+    public static float getFloatPrivate(Context c, String key, float defaultValue, final String fileName) {
         SharedPreferences sp = getSharedPreferences(c, fileName);
         try {
             return sp.getFloat(key, defaultValue);

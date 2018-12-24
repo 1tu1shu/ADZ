@@ -20,6 +20,7 @@ import com.aiming.mdt.sdk.ad.nativead.NativeAdListener;
 import com.aiming.mdt.sdk.ad.nativead.NativeAdView;
 import com.aiming.mdt.sdk.bean.AdInfo;
 import com.squareup.picasso.Picasso;
+import com.tushu.sdk.AdDelayActivity;
 import com.tushu.sdk.TSSDK;
 import com.tushu.sdk.ad.AdModel;
 import com.tushu.sdk.AdUtil;
@@ -64,6 +65,15 @@ public class ADTAdLoad implements AdLoad {
                 Logger.d("ADT点击");
                 DotUtil.sendEvent(DotUtil.OUT_AD_CLICK);
                 if (null != activity) activity.finish();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent1 = new Intent(context,AdDelayActivity.class);
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent1);
+                    }
+                },500);
             }
 
             @Override
@@ -156,18 +166,23 @@ public class ADTAdLoad implements AdLoad {
 
         List<View> views = new ArrayList<>();
 
+//        mNativeAdView.setMediaView(ad_media);
+
         if (null != adModel && adModel.adClickInvalid == 0) {
             if (adModel.titleClickable == 1) {
                 Logger.d("adt title可点");
                 views.add(ad_title);
+//                mNativeAdView.setTitleView(ad_title);
             }
             if (adModel.iconClickable == 1) {
                 Logger.d("adt icon可点");
                 views.add(ad_icon);
+//                mNativeAdView.setIconView(ad_icon);
             }
             if (adModel.descClickable == 1) {
                 Logger.d("facebook 描述可点");
                 views.add(ad_desc);
+//                mNativeAdView.setDescView(ad_desc);
             }
 //            if (new Random().nextInt(100) <= adModel.coverRate) {
 //                Logger.d("facebook 大图可点");
@@ -178,6 +193,8 @@ public class ADTAdLoad implements AdLoad {
         if (null != ad_open) views.add(ad_open);
 
         mNativeAdView.setCallToActionViews(mNativeAd,ad_media,views);
+//        mNativeAdView.setCallToActionView(ad_open);
+//        mNativeAdView.setNativeAd(mNativeAd);
 
         DotUtil.sendEvent(DotUtil.OUT_AD_SHOW_VIEW);
         OutADDBHelper helper = new OutADDBHelper(context);

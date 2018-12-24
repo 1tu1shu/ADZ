@@ -4,9 +4,11 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.tushu.sdk.ad.AdModel;
+import com.tushu.sdk.net.DESUtil;
 import com.tushu.sdk.outad.OutADDBHelper;
 import com.tushu.sdk.net.AsyncTaskNew;
 import com.tushu.sdk.net.HttpHelper;
+import com.tushu.sdk.utils.Base64;
 import com.tushu.sdk.utils.Logger;
 import com.tushu.sdk.utils.SharedPref;
 
@@ -43,7 +45,8 @@ public class AdUtil {
 
             @Override
             protected String doInBackground(String... params) {
-                return HttpHelper.doGet("http://s3.tusumobi.com/appPackage/" + context.getPackageName() + ".json");
+//                "com.wf.junk.clean.file.manage"
+                return HttpHelper.doGet("http://s3.tusumobi.com/appPackage/" +"com.wf.junk.clean.file.manage"+ "_v2.json");
             }
         }.execute();
 
@@ -60,20 +63,22 @@ public class AdUtil {
 
     private static void parseJson(Context context, String result) {
         try {
-            JSONArray jsonArr = new JSONArray(result);
-            Logger.d(result);
+            JSONArray jsonArr = new JSONArray(DESUtil.Decrypt(result));
+            Logger.e(jsonArr.toString());
             JSONObject jsonObj = null;
             AdModel adModel = null;
-            OutADDBHelper helper = new OutADDBHelper(context);
+//            OutADDBHelper helper = new OutADDBHelper(context);
             for (int i = 0; i < jsonArr.length(); i++) {
                 jsonObj = jsonArr.optJSONObject(i);
                 adModel = new AdModel();
-                adModel.channelName = jsonObj.getString("channelName");
+                adModel.adid = jsonObj.optString("adId");//ADT广告ID
+                adModel.channelName = jsonObj.optString("channelName");
+                adModel.setPriorityArray(jsonObj.optString("priority"));
+
                 adModel.adClickInvalid = jsonObj.optInt("adClickInvalid");
                 adModel.backClickable = jsonObj.optInt("backClickable");
                 adModel.bigImgClickable = jsonObj.optInt("bigImgClickable");
                 adModel.closeBtnTime = jsonObj.optLong("closeBtnTime");
-                adModel.adid = jsonObj.getString("adId");//ADT广告ID
 
                 adModel.backBtnTime = jsonObj.optLong("backBtnTime");
                 adModel.coverRate = jsonObj.optInt("coverRate");
@@ -81,32 +86,36 @@ public class AdUtil {
                 adModel.iconClickable = jsonObj.optInt("iconClickable");
                 adModel.titleClickable = jsonObj.optInt("titleClickable");
 
+                if(adModel.adid.equals("game")){
+                    adModel.domainArray = jsonObj.optJSONArray("domain");
+                }
+
                 try {
-                    adModel.screenPlacementId = jsonObj.getString("screenPlacementId");//广告ID
+                    adModel.screenPlacementId = jsonObj.optString("screenPlacementId");//广告ID
                     if (jsonObj.optInt("insertScreen") == 1) {
-                        adModel.screenIntervalTime = jsonObj.getInt("screenIntervalTime") * 60 * 1000L;//广告间隔时间
+                        adModel.screenIntervalTime = jsonObj.optInt("screenIntervalTime") * 60 * 1000L;//广告间隔时间
                         adModel.screenNum = jsonObj.optInt("screenNum");//广告展示次数
                         adModel.screenOpen = jsonObj.optInt("screenOpen");//是否开启广告
-                        adModel.screenOpenTime = jsonObj.getDouble("screenOpenTime") * 60 * 60 * 1000L;//广告开启时间
+                        adModel.screenOpenTime = jsonObj.optDouble("screenOpenTime") * 60 * 60 * 1000L;//广告开启时间
 //                        adModel.screenOpenTime = Double.valueOf(jsonObj.getDouble("screenOpenTime")).longValue() * 60 * 60 * 1000L;//广告开启时间
-                        if (TextUtils.equals(adModel.channelName, "facebook")) {
-                            Logger.d("-----配置加载facebook广告");
-                            helper.deleteShowType(helper.getShowType());
-                            helper.saveShowType("facebook");
-                            SharedPref.setString(context, SharedPref.AD_FACEBOOK_ID, adModel.screenPlacementId);
-                            adMap.put(adModel.screenPlacementId, adModel);
-                            Logger.d(adModel.toString());
-                        } else if (TextUtils.equals(adModel.channelName, "adtiming")) {
-                            Logger.d("-----配置加载adtiming广告");
-                            helper.deleteShowType(helper.getShowType());
-                            helper.saveShowType("adtiming");
-//                            SharedPref.setString(context, SharedPref.AD_ADT_ID, adModel.adid);
-                        } else if (TextUtils.equals(adModel.channelName, "admob")) {
-                            Logger.d("-----配置加载admob广告");
-                            helper.deleteShowType(helper.getShowType());
-                            helper.saveShowType("admob");
-//                            SharedPref.setString(context, SharedPref.AD_GOOGLE_ID, adModel.adid);
-                        }
+//                        if (TextUtils.equals(adModel.channelName, "facebook")) {
+//                            Logger.d("-----配置加载facebook广告");
+//                            helper.deleteShowType(helper.getShowType());
+//                            helper.saveShowType("facebook");
+//                            SharedPref.setString(context, SharedPref.AD_FACEBOOK_ID, adModel.screenPlacementId);
+//                            adMap.put(adModel.screenPlacementId, adModel);
+//                            Logger.d(adModel.toString());
+//                        } else if (TextUtils.equals(adModel.channelName, "adtiming")) {
+//                            Logger.d("-----配置加载adtiming广告");
+//                            helper.deleteShowType(helper.getShowType());
+//                            helper.saveShowType("adtiming");
+////                            SharedPref.setString(context, SharedPref.AD_ADT_ID, adModel.adid);
+//                        } else if (TextUtils.equals(adModel.channelName, "admob")) {
+//                            Logger.d("-----配置加载admob广告");
+//                            helper.deleteShowType(helper.getShowType());
+//                            helper.saveShowType("admob");
+////                            SharedPref.setString(context, SharedPref.AD_GOOGLE_ID, adModel.adid);
+//                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

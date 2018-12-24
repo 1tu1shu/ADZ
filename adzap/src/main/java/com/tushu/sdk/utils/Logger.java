@@ -9,7 +9,7 @@ public class Logger {
 
     public static void d(String content) {
         if (showLog) {
-            Log.d(TAG, content);
+            Log.e(TAG, content);
         }
     }
 

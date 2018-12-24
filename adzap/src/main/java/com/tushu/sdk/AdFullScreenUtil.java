@@ -10,18 +10,8 @@ import com.tushu.sdk.utils.SharedPref;
 
 public class AdFullScreenUtil {
 
-    private static String ad_fb_inter;
-    private static String ad_admob_inter;
-    private static String ad_fb_native;
-    private static String ad_admob_native;
 
-
-    public static void setNativeAdInfo(String fbId,String admobId){
-        ad_fb_native = fbId;
-        ad_admob_native = admobId;
-    }
-
-    public static void showInterAd(Context context){
+    public static void showInterAd(Context context,String ad_fb_inter,String ad_admob_inter){
         AdInterstitial.getInstance(context).showAd();
         preLoadInterAd(context,ad_fb_inter,ad_admob_inter);
     }
@@ -29,15 +19,15 @@ public class AdFullScreenUtil {
     /**
      * 加载全屏广告
      */
-    public static void showFullScreenAd(Context context) {
+    public static void showFullScreenAd(Context context,String ad_fb_inter,String ad_admob_inter,String ad_fb_native,String ad_admob_native) {
         int adClassify = SharedPref.getInt(context, SharedPref.LOAD_AD_FULL_SCREEN, 1);
         if (adClassify % 2 == 0) {
             //原生全屏广告
 //            showNativeAD(context, admobNativeID, facebookNativeID);
-            showNativeAd(context);
+            showNativeAd(context,ad_fb_native,ad_admob_native);
         } else {
             //插屏广告
-            showInterAd(context);
+            showInterAd(context,ad_fb_inter,ad_admob_inter);
         }
         adClassify++;
         SharedPref.setInt(context, SharedPref.LOAD_AD_FULL_SCREEN, adClassify);
@@ -47,12 +37,8 @@ public class AdFullScreenUtil {
      * 缓存插屏广告
      */
     public static void preLoadInterAd(Context context,String fbId,String admobId) {
-        ad_fb_inter = fbId;
-        ad_admob_inter = admobId;
 
-        AdInterstitial.getInstance(context).preLoadAdmob(admobId);
-
-        /**
+//        AdInterstitial.getInstance(context).preLoadAdmob(admobId);
         int adCode = SharedPref.getInt(context, SharedPref.LOAD_AD_PRELOAD, 1);
         if (adCode % 2 == 0) {
             //加载admob
@@ -66,14 +52,13 @@ public class AdFullScreenUtil {
             AdInterstitial.getInstance(context).preLoadFb(fbId,admobId);
         }
         adCode++;
-        SharedPref.setInt(context, SharedPref.LOAD_AD_PRELOAD, adCode);**/
+        SharedPref.setInt(context, SharedPref.LOAD_AD_PRELOAD, adCode);
     }
-
 
     /**
      * 展示原生全屏广告
      */
-    private static void showNativeAd(Context context) {
+    private static void showNativeAd(Context context,String ad_fb_native,String ad_admob_native) {
         int adCode = SharedPref.getInt(context, SharedPref.LOAD_AD_CODE, 1);
         AdDialog adDialog = new AdDialog(context);
         adDialog.setAdInfo(ad_fb_native, ad_admob_native);
@@ -107,7 +92,7 @@ public class AdFullScreenUtil {
         if (adClassify % 2 == 0) {
             //原生全屏广告
 //            showNativeAD(context, admobNativeID, facebookNativeID);
-            new AdDialog(context).setAdtInfo(adTimeId,adFbId).loadAdt();
+            new AdDialog(context).setAdInfo(adTimeId,adFbId).loadAdt();
         } else {
             //插屏广告
             AdInterstitial.getInstance(context).showAdt();

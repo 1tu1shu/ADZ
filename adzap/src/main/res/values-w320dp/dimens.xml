@@ -110,6 +110,7 @@
     <dimen name="h220dp">181.72357dp</dimen>
     <dimen name="h230dp">189.67532dp</dimen>
     <dimen name="h240dp">198.2439dp</dimen>
+    <dimen name="h250dp">206.1688dp</dimen>
     <dimen name="h275dp">227.15446dp</dimen>
     <dimen name="h285dp">235.03247dp</dimen>
     <dimen name="h430dp">355.18698dp</dimen>

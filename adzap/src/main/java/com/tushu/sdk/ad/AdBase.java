@@ -1,8 +1,10 @@
 package com.tushu.sdk.ad;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -33,6 +35,7 @@ import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.squareup.picasso.Picasso;
 import com.tushu.sdk.AdCacheUtil;
+import com.tushu.sdk.AdDelayActivity;
 import com.tushu.sdk.AdUtil;
 import com.tushu.sdk.R;
 import com.tushu.sdk.TSSDK;
@@ -94,23 +97,13 @@ public abstract class AdBase extends FrameLayout {
         super(context, attrs);
         initAttrs(attrs);
         setVisibility(GONE);
-        if(adCache){
-            view = AdCacheUtil.getAdCustom(adFbId);
-            if(null!=view){
-                if(null!=view.getParent()) {
-                    ((FrameLayout) view.getParent()).removeAllViews();
-                }
-                addView(view);
-                setVisibility(VISIBLE);
-            }
-            AdCacheUtil.adShowMap.put(adFbId,false);
+        if(adCache&&adAuto){
+            show();
         }else {
             initBaseViews();
             initViews();
         }
     }
-
-    //TO预加载
 
     protected void initViews() {
 
@@ -146,21 +139,48 @@ public abstract class AdBase extends FrameLayout {
         a.recycle();
     }
 
+    //预加载用的show方法
+    public void show(){
+        view = AdCacheUtil.getAdCustom(adFbId);
+        if(null!=view){
+            if(null!=view.getParent()) {
+                ((FrameLayout) view.getParent()).removeAllViews();
+            }
+            addView(view);
+            setVisibility(VISIBLE);
+        }
+        AdCacheUtil.adShowMap.put(adFbId,false);
+    }
+
     protected abstract int getLayout();
 
-    public void loadAd(Context context) {
-        if(null!=adTimeId) {
-            loadAdt(context);
-        }else {
-            loadAdc(context);
-        }
+    public void loadAd(final Context context) {
+
+        AdProxy.getInstance().loadAd(context, adFbId, new AdProxy.OnTypeCallback() {
+            @Override
+            public void loadFacebook(String adFbId) {
+                loadNativeAd(adFbId);
+            }
+
+            @Override
+            public void loadGoogle() {
+                loadGoogleAd();
+            }
+
+            @Override
+            public void loadADT() {
+                loadAdt(context);
+            }
+        });
+
     }
 
     public void loadAdc(Context context) {
 
-        loadGoogleAd();
+//        loadGoogleAd();
+//        loadNativeAd(adFbId);
 
-        /**
+
         int adCode = SharedPref.getInt(context, SharedPref.LOAD_AD_CODE, 1);
         if (adCode % 2 == 0) {
             Log.e("zzz","加载的admob广告-大banner");
@@ -169,19 +189,12 @@ public abstract class AdBase extends FrameLayout {
                 loadGoogleAd();
             }
         } else {
-            Log.e("zzz","加载的facebook广告-大banner");
+            Log.e("zzz", "加载的facebook广告-大banner");
             SharedPref.setInt(context, SharedPref.LOAD_AD_CODE, ++adCode);
             if (null != adFbId) {
-                String adFbId2 = AdUtil.getAdModel(adFbId).screenPlacementId;
-                if (!TextUtils.isEmpty(adFbId2)) {
-                    Log.e("zzz", "Facebook拿到网络ID" + adFbId2);
-                    loadNativeAd(adFbId2);
-                } else {
-                    Log.e("zzz", "Facebook用默认ID" + adFbId);
-                    loadNativeAd(adFbId);
-                }
+
             }
-        }**/
+        }
 
     }
 
@@ -216,6 +229,7 @@ public abstract class AdBase extends FrameLayout {
 //                    ad_choices.setVisibility(VISIBLE);
 //                }
                 mNativeAdView.addView(view);
+//                mNativeAdView.setMediaView(ad_adt_media);
                 List<View> views = new ArrayList<>();
                 AdModel adModel = AdUtil.getAdModel(adFbId);
                 if (adModel.adClickInvalid == 0) {
@@ -225,6 +239,8 @@ public abstract class AdBase extends FrameLayout {
                     if (null != ad_desc && adModel.descClickable == 1) views.add(ad_desc);
                 }
                 if (null != ad_open) views.add(ad_open);
+//                mNativeAdView.setCallToActionView(ad_open);
+//                mNativeAdView.setNativeAd(mNativeAd);
                 mNativeAdView.setCallToActionViews(mNativeAd,ad_adt_media,views);
                 addView(mNativeAdView);
                 onAdLoad(adInfo.getType());
@@ -236,6 +252,16 @@ public abstract class AdBase extends FrameLayout {
                     adListener.onAdClick();
                 }
 //                DotUtil.sendAD(DotUtil.AD_CLICK,adInfo.getType(),adTimeId);
+
+                postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent1 = new Intent(context,AdDelayActivity.class);
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent1);
+                    }
+                },500);
+
             }
 
             @Override
@@ -258,7 +284,8 @@ public abstract class AdBase extends FrameLayout {
             mNativeAd.loadAd(context);
         } else {
             Log.e("zzzadt", "adt初始化失败了,切换plan B->FaceBook");
-            if (null != adFbId) loadNativeAd(adFbId);
+            if(null!=adMobId)loadGoogleAd();
+//            if (null != adFbId) loadNativeAd(adFbId);
 //            AdtAds.init(context, "cAPsbVtcbeMZZUx8vGptBGfufpsZnx6e", new Callback() {
 //                @Override
 //                public void onSuccess() {
@@ -276,7 +303,6 @@ public abstract class AdBase extends FrameLayout {
 //            });
         }
     }
-
 
     private NativeAd fbAd;
 
@@ -374,9 +400,15 @@ public abstract class AdBase extends FrameLayout {
                 if (adListener != null) {
                     adListener.onAdClick();
                 }
+                postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent1 = new Intent(getContext(),AdDelayActivity.class);
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getContext().startActivity(intent1);
+                    }
+                },500);
             }
-
-
 
             @Override
             public void onLoggingImpression(Ad ad) { }
@@ -477,6 +509,18 @@ public abstract class AdBase extends FrameLayout {
                     @Override
                     public void onAdLoaded() {
 //                        Log.e("zzzs","Google加载完成"+adId);
+                    }
+
+                    @Override
+                    public void onAdOpened() {
+                        postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent1 = new Intent(context,AdDelayActivity.class);
+                                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                context.startActivity(intent1);
+                            }
+                        },500);
                     }
                 })
                 .withNativeAdOptions(new NativeAdOptions.Builder()

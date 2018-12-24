@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -110,6 +111,15 @@ public class Base64 {
         return result;
     }  
 
+    public static String MD5(String src)  {
+        try {
+            return MD5(src.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static String MD5(byte[] src) {
         // md5 ("abc") = 900150983cd24fb0d6963f7d28e17f72
         MessageDigest messageDigest = null;
@@ -126,7 +136,8 @@ public class Base64 {
                 hexString.append(hex);
             }
             return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

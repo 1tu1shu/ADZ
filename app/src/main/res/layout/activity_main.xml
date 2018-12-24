@@ -25,17 +25,22 @@
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="wrap_content"-->
         <!--app:ad_mobId="ca-app-pub-8080140584266451/3361697189"-->
-        <!--app:ad_fbId="2144897019126127_2299744070308087"/>-->
+        <!--app:ad_fbId="2144897019126127_2299744070308087"-->
+        <!--app:ad_timeId="9527"/>-->
 
 
-    <com.tushu.sdk.ad.AdCustom
-        android:id="@+id/ad_custom"
-        android:layout_marginTop="@dimen/h10dp"
+    <!--<com.tushu.sdk.ad.AdCustom-->
+        <!--android:id="@+id/ad_custom"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="@dimen/h200dp"-->
+        <!--app:ad_layout="@layout/adz_banner4"-->
+        <!--app:ad_auto="true"-->
+        <!--app:ad_mobId="ca-app-pub-8080140584266451/2409349186"-->
+        <!--app:ad_fbId="1898385083559097_1906509682746637" />-->
+
+    <Button
+        android:id="@+id/game_btn"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:ad_layout="@layout/adz_result"
-        app:ad_mobId="ca-app-pub-8080140584266451/2409349186"
-        app:ad_fbId="2144897019126127_2299068017042359" />
-
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

@@ -3,7 +3,9 @@ package com.tushu.sdk.ad;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Gravity;
@@ -35,6 +37,7 @@ import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.squareup.picasso.Picasso;
+import com.tushu.sdk.AdDelayActivity;
 import com.tushu.sdk.AdUtil;
 import com.tushu.sdk.R;
 import com.tushu.sdk.TSSDK;
@@ -85,19 +88,33 @@ public class AdDialog extends Dialog{
     }
 
     public AdDialog setAdInfo(String adFbId,String admobId){
-        this.adFbId = adFbId;
-        this.admobId = admobId;
-        return this;
+        return setAdInfo(adFbId,admobId,null);
     }
 
-    public AdDialog setAdtInfo(String adTimeId,String adFbId){
-        this.adTimeId = adTimeId;
+    public AdDialog setAdInfo(String adFbId,String admobId,String adTimeId){
         this.adFbId = adFbId;
+        this.admobId = admobId;
+        this.adTimeId = adTimeId;
         return this;
     }
 
     public void loadAd(){
-        loadNativeAd();
+        AdProxy.getInstance().loadAd(context, adFbId, new AdProxy.OnTypeCallback() {
+            @Override
+            public void loadFacebook(String adFbId) {
+                loadNativeAd(adFbId);
+            }
+
+            @Override
+            public void loadGoogle() {
+                loadGoogleAd();
+            }
+
+            @Override
+            public void loadADT() {
+                loadAdt(context);
+            }
+        });
     }
 
     public void loadAdt(){
@@ -172,7 +189,8 @@ public class AdDialog extends Dialog{
         }
     }
 
-    public void loadNativeAd() {
+
+    public void loadNativeAd(final String adFbId) {
 //        String adId = "1805011946473276_1805034216471049";
         Log.e("zzz", "加载Facebook-" + adFbId);
         fbAd = new NativeAd(getContext(), adFbId);
@@ -180,15 +198,21 @@ public class AdDialog extends Dialog{
             @Override
             public void onAdLoaded(Ad ad) {
 
+                show2();
+
                 if (fbAd == null || fbAd != ad) {
                     return;
                 }
 
                 fbAd.unregisterView();
 
-                // Add the Ad view into the ad container.
                 NativeAdLayout nativeAdLayout = new NativeAdLayout(getContext());
-                nativeAdLayout.addView(ad_root);
+                // Add the Ad view into the ad container.
+                if (null!=ad_rl&&null!= ad_rl.getParent()) {
+                    ((FrameLayout) ad_rl.getParent()).removeAllViews();
+                    nativeAdLayout.addView(ad_rl);
+                    ad_root.addView(nativeAdLayout);
+                }
 
                 // Add the AdOptionsView
                 AdOptionsView adOptionsView = new AdOptionsView(getContext(), fbAd, nativeAdLayout);
@@ -252,6 +276,16 @@ public class AdDialog extends Dialog{
 
             @Override
             public void onAdClicked(Ad ad) {
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent1 = new Intent(context,AdDelayActivity.class);
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent1);
+                    }
+                },500);
+
             }
 
             @Override
@@ -306,13 +340,12 @@ public class AdDialog extends Dialog{
 
                         if (null != ad_open)  adView.setCallToActionView(ad_open);
 
-                        if (null!= ad_rl.getParent()) {
+                        if (null!=ad_rl&&null!= ad_rl.getParent()) {
                             ((FrameLayout) ad_rl.getParent()).removeAllViews();
+                            adView.addView(ad_rl);
+                            adView.setNativeAd(unifiedNativeAd);
+                            ad_root.addView(adView);
                         }
-                        adView.addView(ad_rl);
-                        adView.setNativeAd(unifiedNativeAd);
-                        ad_root.addView(adView);
-
                     }
                 })
                 .withAdListener(new com.google.android.gms.ads.AdListener() {
@@ -339,6 +372,16 @@ public class AdDialog extends Dialog{
 
                     @Override
                     public void onAdOpened() {
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent1 = new Intent(context,AdDelayActivity.class);
+                                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                context.startActivity(intent1);
+                            }
+                        },500);
+
                     }
                 })
                 .withNativeAdOptions(new NativeAdOptions.Builder()
@@ -371,11 +414,12 @@ public class AdDialog extends Dialog{
                     ((FrameLayout) ad_rl.getParent()).removeAllViews();
                 }
                 mNativeAdView.addView(ad_rl);
-                List views = new ArrayList<>();
 
+//                mNativeAdView.setMediaView(ad_adt_media);
+                List views = new ArrayList<>();
                 AdModel adModel = AdUtil.getAdModel(adFbId);
                 if(adModel.adClickInvalid==0) {
-                    if (null != ad_title && adModel.titleClickable==1)  views.add(ad_title);
+                    if (null != ad_title && adModel.titleClickable==1)   views.add(ad_title);
                     if (null != ad_desc && adModel.descClickable==1)  views.add(ad_desc);
 //                    if (null != ad_image && new Random().nextInt(100) <= adModel.coverRate) views.add(ad_image);
                     if (null != ad_icon && adModel.iconClickable==1) views.add(ad_icon);
@@ -383,6 +427,8 @@ public class AdDialog extends Dialog{
 
                 if(null!=ad_open)views.add(ad_open);
                 mNativeAdView.setCallToActionViews(mNativeAd,ad_adt_media,views);
+//                mNativeAdView.setCallToActionView(ad_open);
+//                mNativeAdView.setNativeAd(mNativeAd);
                 ad_root.addView(mNativeAdView);
                 DotUtil.sendAD(DotUtil.AD_LOAD,adInfo.getType(),adTimeId);
             }
@@ -391,6 +437,14 @@ public class AdDialog extends Dialog{
             public void onADClick(AdInfo adInfo) {
                 DotUtil.sendAD(DotUtil.AD_CLICK,adInfo.getType(),adTimeId);
                 dismiss();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent1 = new Intent(context,AdDelayActivity.class);
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent1);
+                    }
+                },500);
             }
 
             @Override

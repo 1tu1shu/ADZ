@@ -1,10 +1,9 @@
 package com.tushu.basedemo;
 
-import android.app.Application;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 
 import com.facebook.FacebookSdk;
-import com.facebook.ads.AudienceNetworkAds;
 import com.facebook.appevents.AppEventsLogger;
 import com.flurry.android.FlurryAgent;
 import com.google.firebase.FirebaseApp;
@@ -28,8 +27,11 @@ public class MyApplication extends MultiDexApplication{
         FacebookSdk.sdkInitialize(this);
         AppEventsLogger.activateApp(this);
 
+        TSSDK.init(this,"2144897019126127_2299753613640466","ca-app-pub-8080140584266451/1091973059","hO2besnXs9fiycmEtpNVOdn08V5VERL9");
         TSSDK.readFbLog();
-        TSSDK.init(this,"2144897019126127_2299753613640466","ca-app-pub-8080140584266451/1091973059");
+//        TSSDK.init(this);
+
+        Log.e("zzz","MyApplication");
 
     }
 

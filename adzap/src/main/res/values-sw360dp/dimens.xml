@@ -87,6 +87,7 @@
     <dimen name="h220dp">220dp</dimen>
     <dimen name="h230dp">230dp</dimen>
     <dimen name="h240dp">240dp</dimen>
+    <dimen name="h250dp">250dp</dimen>
     <dimen name="h275dp">275dp</dimen>
     <dimen name="h285dp">285dp</dimen>
     <dimen name="h430dp">430dp</dimen>

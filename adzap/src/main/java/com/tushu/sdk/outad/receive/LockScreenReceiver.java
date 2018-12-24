@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import com.tushu.sdk.AdUtil;
 import com.tushu.sdk.ad.AdModel;
 import com.tushu.sdk.outad.OutADDBHelper;
+import com.tushu.sdk.outad.activity.WebGameActivity;
 import com.tushu.sdk.outad.adrequest.AdManager;
 import com.tushu.sdk.utils.DotUtil;
 import com.tushu.sdk.utils.Logger;
@@ -50,10 +51,11 @@ public class LockScreenReceiver extends BroadcastReceiver {
             screenON(context);
         } else if (mAction.equals(Intent.ACTION_USER_PRESENT)) {
             //解锁
-            Logger.d("ACTION_SCREEN_ON");
+            Logger.d("ACTION_USER_PRESENT");
             AdManager.getInstence().setHasUnLock(true);
             outAd(context);
             screenPresent(context);
+            AdManager.getInstence().loadGame(context);
         }
     }
 
@@ -111,7 +113,11 @@ public class LockScreenReceiver extends BroadcastReceiver {
             //弹广告
             Logger.d("进入了判断，准备加载广告");
 
-            AdManager.getInstence().loadAd(context);
+//            if(showNum%2==0) {
+//                AdManager.getInstence().loadAd(context);
+//            }else{
+//                AdManager.getInstence().loadGame(context);
+//            }
 
             if (time == 0) {
                 Logger.d("设置第一次加载广告时间");

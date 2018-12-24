@@ -1,6 +1,8 @@
 package com.tushu.sdk.ad;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -9,6 +11,7 @@ import com.facebook.ads.AdError;
 import com.facebook.ads.InterstitialAd;
 import com.facebook.ads.InterstitialAdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.tushu.sdk.AdDelayActivity;
 import com.tushu.sdk.AdUtil;
 import com.tushu.sdk.TSSDK;
 import com.tushu.sdk.utils.DotUtil;
@@ -86,6 +89,8 @@ public class AdInterstitial {
     }
 
     public void loadAdmob(final String admobId, final boolean isPreLoad){
+        if(TSSDK.isVIP) return;
+
         admobAd = new com.google.android.gms.ads.InterstitialAd(context);
         admobAd.setAdUnitId(admobId);
         admobAd.setImmersiveMode(true);
@@ -109,10 +114,24 @@ public class AdInterstitial {
             }
 
             @Override
+            public void onAdOpened() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent1 = new Intent(context,AdDelayActivity.class);
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent1);
+                    }
+                },500);
+            }
+
+            @Override
             public void onAdFailedToLoad(int i) {
                 Log.e("zzz","google插屏错了"+i);
+                if(null!=adListener) adListener.onError(i,"");
             }
         });
+        if(!admobAd.isLoading())
         admobAd.loadAd(new AdRequest.Builder().build());
     }
 
@@ -121,6 +140,7 @@ public class AdInterstitial {
     }
 
     public void loadNativeAd(final String fbId, final String admobId, final boolean isPreLoad) {
+        if(TSSDK.isVIP) return;
 //        if (null == fbAd) {
             String adFbId2 = AdUtil.getAdModel(fbId).screenPlacementId;
             if(TextUtils.isEmpty(adFbId2)){
@@ -133,7 +153,9 @@ public class AdInterstitial {
                 public void onInterstitialDisplayed(Ad ad) { }
 
                 @Override
-                public void onInterstitialDismissed(Ad ad) { }
+                public void onInterstitialDismissed(Ad ad) {
+                    if(null!=adListener) adListener.onAdClose();
+                }
 
                 @Override
                 public void onError(Ad ad, AdError adError) {
@@ -141,6 +163,7 @@ public class AdInterstitial {
 //                    if(!isPreLoad&&null!=admobId) {
                         Log.e("zzz", "加载google插屏-"+admobId);
                         loadAdmob(admobId, isPreLoad);
+                    if(null!=adListener) adListener.onError(adError.getErrorCode(),adError.getErrorMessage());
 //                    }
                 }
 
@@ -156,10 +179,22 @@ public class AdInterstitial {
                     if(isPreLoad){
                         Log.e("zzz","Facebook缓存成功"+fbId);
                     }
+                    if(adListener != null) adListener.onAdLoad();
                 }
 
                 @Override
-                public void onAdClicked(Ad ad) {}
+                public void onAdClicked(Ad ad) {
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent1 = new Intent(context,AdDelayActivity.class);
+                            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent1);
+                        }
+                    },500);
+
+                }
 
                 @Override
                 public void onLoggingImpression(Ad ad) {}
@@ -175,6 +210,7 @@ public class AdInterstitial {
     }
 
     public void loadAdt(String adTimeId,final boolean isPreLoad){
+        if(TSSDK.isVIP) return;
         if(null==adTimeId)return;
         if(!TSSDK.isAdtInit)return;
         String adId = adTimeId;
@@ -196,6 +232,16 @@ public class AdInterstitial {
                 if(null!=adListener) {
                     adListener.onAdClick();
                 }
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent1 = new Intent(context,AdDelayActivity.class);
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent1);
+                    }
+                },500);
+
             }
 
             @Override

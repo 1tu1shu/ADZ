@@ -1,5 +1,11 @@
 package com.tushu.sdk.ad;
 
+import android.text.TextUtils;
+
+import org.json.JSONArray;
+
+import java.util.Stack;
+
 /**
  * Created by A03 on 2018/6/7.
  */
@@ -14,6 +20,10 @@ public class AdModel {
     public long closeBtnTime = 800;//关闭按钮延迟显示时间
     public String screenPlacementId; //Facebook可替换Id
     public String channelName = "facebook";//facebook  adtiming
+//    public String priority;//广告优先级
+    public String[] priorityArray;
+
+    public JSONArray domainArray; //游戏链接
 
     public long backBtnTime;//多久返回按钮可以点击
     public int coverRate = 100;//大图点击几率
@@ -28,5 +38,13 @@ public class AdModel {
     public int screenNum = 30;//最大显示次数
     public int screenOpen = 1;//是否展示广告  1为显示  0为不显示
     public double screenOpenTime = 1000L * 60 * 60 * 12;//安装后过多久可以弹广告
+
+    public void setPriorityArray(String priority){
+        if(!TextUtils.isEmpty(priority)) {
+            priorityArray = priority.split("\\,");
+        }
+    }
+
+
 
 }

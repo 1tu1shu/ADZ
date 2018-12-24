@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.os.BatteryManager;
 import android.text.TextUtils;
 
+import com.tushu.sdk.AdDelayActivity;
 import com.tushu.sdk.AdUtil;
 import com.tushu.sdk.ad.AdModel;
 import com.tushu.sdk.outad.OutADDBHelper;
+import com.tushu.sdk.outad.activity.WebGameActivity;
 import com.tushu.sdk.outad.adrequest.AdManager;
 import com.tushu.sdk.utils.DotUtil;
 import com.tushu.sdk.utils.Logger;
@@ -50,18 +52,18 @@ public class BatteryStatusReceiver extends BroadcastReceiver {
             if (status == BatteryManager.BATTERY_STATUS_CHARGING ||
                     status == BatteryManager.BATTERY_STATUS_FULL) {//充电中
 
-                int chargeCode = SharedPref.getInt(context, SharedPref.CHARGE_STATE, 0);
+                int chargeCode = SharedPref.getInt(context, SharedPref.CHARGE_STATE, 1);
                 if (chargeCode != 1) {
-                    SharedPref.setInt(context, SharedPref.CHARGE_STATE, 1);
                     checkAdShow(context);
                 }
+                SharedPref.setInt(context, SharedPref.CHARGE_STATE, 1);
             } else {//断开电源
 
-                int chargeCode = SharedPref.getInt(context, SharedPref.CHARGE_STATE, 0);
+                int chargeCode = SharedPref.getInt(context, SharedPref.CHARGE_STATE, 2);
                 if (chargeCode != 2) {
-                    SharedPref.setInt(context, SharedPref.CHARGE_STATE, 2);
                     checkAdShow(context);
                 }
+                SharedPref.setInt(context, SharedPref.CHARGE_STATE, 2);
             }
 
             batteryChange(context,intent);
@@ -105,7 +107,12 @@ public class BatteryStatusReceiver extends BroadcastReceiver {
             DotUtil.sendEvent(DotUtil.OUT_AD_CHARGE_JUDGE);
             SharedPref.setLong(context, SharedPref.LAST_SHOW_TIME, System.currentTimeMillis());
 
-            AdManager.getInstence().loadAd(context);
+            Logger.d("设置加载次数:" + showNum);
+//            if(showNum%2==0) {
+                AdManager.getInstence().loadAd(context);
+//            }else{
+//                AdManager.getInstence().loadGame(context);
+//            }
 
             if (time == 0) {
                 SharedPref.setLong(context, SharedPref.SHOW_FIRST_TIME, System.currentTimeMillis());

@@ -47,6 +47,9 @@ public class DotUtil {
     public static final String OUT_AD_ADMOB_REQUEST = "out_ad_admob_request";//admob广告请求
     public static final String OUT_AD_ADT_REQUEST = "out_ad_adt_request";//adt广告请求
 
+    public static final String OUT_GAME_REQUEST = "out_game_request";//game请求
+    public static final String OUT_GAME_SHOW = "out_game_show";//game展示
+
     private static AppEventsLogger logger = AppEventsLogger.newLogger(TSSDK.app);
 
     public static void sendEvent(String type) {

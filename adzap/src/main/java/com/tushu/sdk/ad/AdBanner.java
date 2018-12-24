@@ -9,11 +9,13 @@ import android.util.Log;
 import android.widget.FrameLayout;
 
 import com.aiming.mdt.sdk.ad.bannerad.BannerAd;
+import com.aiming.mdt.sdk.ad.bannerad.BannerAdListener;
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.tushu.sdk.R;
+import com.tushu.sdk.TSSDK;
 import com.tushu.sdk.utils.SharedPref;
 
 
@@ -50,28 +52,27 @@ public class AdBanner extends FrameLayout {
 
 
     public void loadAd(){
-        if(null!=adTimeId){
-            loadAdtAd();
-        }else{
-            /**
-            int adCode = SharedPref.getInt(getContext(), SharedPref.LOAD_AD_CODE, 1);
-            if (adCode % 2 == 0) {
-                Log.e("zzz","加载的admob广告-小banner");
-                SharedPref.setInt(getContext(), SharedPref.LOAD_AD_CODE, ++adCode);
+        AdProxy.getInstance().loadAd(getContext(), adFbId, new AdProxy.OnTypeCallback() {
+            @Override
+            public void loadFacebook(String adFbId) {
+                loadFbAd(adFbId);
+            }
+
+            @Override
+            public void loadGoogle() {
                 loadAdmobAd();
-            } else {
-                Log.e("zzz","加载的facebook广告-小banner");
-                SharedPref.setInt(getContext(), SharedPref.LOAD_AD_CODE, ++adCode);
-                loadFbAd();
-            }**/
-            loadAdmobAd();
-        }
+            }
+
+            @Override
+            public void loadADT() {
+                loadAdtAd();
+            }
+        });
     }
 
-    private void loadFbAd(){
+    private void loadFbAd(String adFbId){
         fbAdView = new com.facebook.ads.AdView(getContext(), adFbId,com.facebook.ads.AdSize.BANNER_HEIGHT_50);
         fbAdView.loadAd();
-        addView(fbAdView);
         fbAdView.setAdListener(new com.facebook.ads.AdListener() {
             @Override
             public void onError(Ad ad, AdError adError) {
@@ -80,7 +81,7 @@ public class AdBanner extends FrameLayout {
 
             @Override
             public void onAdLoaded(Ad ad) {
-
+                addView(fbAdView);
             }
 
             @Override
@@ -100,11 +101,15 @@ public class AdBanner extends FrameLayout {
         admobAdView.setAdSize(com.google.android.gms.ads.AdSize.SMART_BANNER);
         admobAdView.setAdUnitId(adMobId);
         admobAdView.loadAd(new AdRequest.Builder().build());
-        addView(admobAdView);
         admobAdView.setAdListener(new AdListener(){
             @Override
             public void onAdFailedToLoad(int i) {
                 Log.e("zzz","google 小banner出错-"+i);
+            }
+
+            @Override
+            public void onAdLoaded() {
+                addView(admobAdView);
             }
         });
     }
@@ -112,7 +117,23 @@ public class AdBanner extends FrameLayout {
     private void loadAdtAd(){
         bannerAd = new BannerAd(getContext(), adTimeId);
         bannerAd.loadAd(getContext());
-        addView(bannerAd);
+        bannerAd.setListener(new BannerAdListener() {
+            @Override
+            public void onADReady() {
+                addView(bannerAd);
+            }
+
+            @Override
+            public void onADClick() {
+
+            }
+
+            @Override
+            public void onADFail(String s) {
+
+            }
+        });
+
     }
 
     @Override

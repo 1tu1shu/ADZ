@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.aiming.mdt.sdk.AdtAds;
 import com.aiming.mdt.sdk.Callback;
@@ -27,17 +28,28 @@ import static android.content.Intent.ACTION_POWER_DISCONNECTED;
 public class TSSDK {
 
     public static Application app;
+    public static String adtKey;
     public static boolean isAdtInit;
 
+    public static boolean isVIP;
 
     public static void init(Application app){
         TSSDK.app = app;
         AudienceNetworkAds.initialize(app);
     }
 
-    public static void init(Application app,String fbId,String admobId){
+    public static void init(Application app,String fbId,String admobId,String adtKey){
+        init(app,fbId,admobId,adtKey,null,null,null);
+    }
 
+    public static void init(Application app,String fbId,String admobId){
+        init(app,fbId,admobId,null,null,null,null);
+    }
+
+    public static void init(Application app,String fbId,String admobId,String adtKey
+            ,LockScreenReceiver lockScreenReceiver,NetReceive netReceive,BatteryStatusReceiver batteryStatusReceiver){
         TSSDK.app = app;
+        TSSDK.adtKey = adtKey;
 //      AudienceNetworkAds.isInAdsProcess(app);
         AudienceNetworkAds.initialize(app);
 
@@ -50,31 +62,48 @@ public class TSSDK {
             SharedPref.setLong(app, SharedPref.INSTALL_TIME, System.currentTimeMillis());
         }
 
+        registerReceiver(lockScreenReceiver,netReceive,batteryStatusReceiver);
+    }
+
+
+    public static void registerReceiver(LockScreenReceiver lockScreenReceiver,NetReceive netReceive,BatteryStatusReceiver batteryStatusReceiver){
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_USER_PRESENT);
         filter.setPriority(2147483647);
-        app.registerReceiver(new LockScreenReceiver(), filter);
+        if(null==lockScreenReceiver) {
+            app.registerReceiver(new LockScreenReceiver(), filter);
+        }else{
+            app.registerReceiver(lockScreenReceiver, filter);
+        }
         Log.e("zzz","注册了屏幕监听广播");
 
         IntentFilter filter2 = new IntentFilter();
         filter2.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         filter2.addAction("android.net.wifi.WIFI_STATE_CHANGED");
         filter2.addAction("android.net.wifi.STATE_CHANGE");
-        app.registerReceiver(new NetReceive(), filter2);
+        if(null==netReceive){
+            app.registerReceiver(new NetReceive(), filter2);
+        }else{
+            app.registerReceiver(netReceive, filter2);
+        }
         Log.e("zzz","注册了网络监听广播");
 
         //电池状态变化监听
         IntentFilter filter3 = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         filter3.addAction(ACTION_POWER_CONNECTED);
         filter3.addAction(ACTION_POWER_DISCONNECTED);
-        app.registerReceiver(new BatteryStatusReceiver(),filter3);
-
+        if(null==batteryStatusReceiver){
+            app.registerReceiver(new BatteryStatusReceiver(),filter3);
+        }else{
+            app.registerReceiver(batteryStatusReceiver, filter2);
+        }
+        Log.e("zzz","注册了电池状态广播");
     }
 
 
-    public static void initSplash(Activity activity,String adtKey){
+    public static void initSplash(Activity activity){
         AdUtil.getServerData(activity);
         if(null!=adtKey) {
             AdtAds.init(activity, adtKey, new Callback() {
@@ -117,6 +146,7 @@ public class TSSDK {
                                 Log.e("zzz添加测试设备ID", hashCode);
                                 Looper.prepare();
                                 AdSettings.addTestDevice(hashCode);
+                                Toast.makeText(TSSDK.app,"注意！已添加Facebook测试设备-"+hashCode,Toast.LENGTH_LONG).show();
                                 Looper.loop();
                             }
 //                            }
@@ -127,6 +157,12 @@ public class TSSDK {
                 }
             }
         }).start();
+        Toast.makeText(TSSDK.app,"注意！正在添加Facebook测试设备！",Toast.LENGTH_LONG).show();
+    }
+
+
+    public static void isVIP(boolean isVIP){
+        TSSDK.isVIP = isVIP;
     }
 
 }

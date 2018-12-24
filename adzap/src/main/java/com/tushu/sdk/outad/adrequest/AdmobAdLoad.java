@@ -18,6 +18,7 @@ import com.google.android.gms.ads.formats.MediaView;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
+import com.tushu.sdk.AdDelayActivity;
 import com.tushu.sdk.ad.AdModel;
 import com.tushu.sdk.AdUtil;
 import com.tushu.sdk.outad.OutADDBHelper;
@@ -76,6 +77,16 @@ public class AdmobAdLoad implements AdLoad {
                     public void onAdOpened() {
                         super.onAdOpened();
                         if (null != activity) activity.finish();
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent1 = new Intent(context,AdDelayActivity.class);
+                                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                context.startActivity(intent1);
+                            }
+                        },500);
+
                     }
                 })
                 .withNativeAdOptions(new NativeAdOptions.Builder()

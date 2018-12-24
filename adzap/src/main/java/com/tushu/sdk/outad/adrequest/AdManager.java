@@ -3,9 +3,17 @@ package com.tushu.sdk.outad.adrequest;
 import android.app.Activity;
 import android.content.Context;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
+import com.tushu.sdk.AdUtil;
+import com.tushu.sdk.TSSDK;
+import com.tushu.sdk.ad.AdProxy;
+import com.tushu.sdk.utils.DotUtil;
 import com.tushu.sdk.utils.Logger;
 import com.tushu.sdk.utils.SharedPref;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 public class AdManager {
 
@@ -19,11 +27,13 @@ public class AdManager {
     private FacebookAdLoad facebookAdLoad;
     private AdmobAdLoad admobAdLoad;
     private ADTAdLoad adtAdLoad;
+    private GameLoad gameLoad;
 
     private AdManager() {
         facebookAdLoad = new FacebookAdLoad();
         admobAdLoad = new AdmobAdLoad();
         adtAdLoad = new ADTAdLoad();
+        gameLoad = new GameLoad();
     }
 
     public static AdManager getInstence() {
@@ -61,21 +71,24 @@ public class AdManager {
         return showAD;
     }
 
-    public void loadAd(Context context) {
-        int adCode = SharedPref.getInt(context, SharedPref.LOAD_AD_CODE, 1);
-        if (adCode % 2 == 0) {
-            //加载admob
-            Logger.d("加载的admob广告外插");
-            adCode++;
-            SharedPref.setInt(context, SharedPref.LOAD_AD_CODE, adCode);
-            loadAdmobAd(context, SharedPref.getString(context, SharedPref.AD_GOOGLE_ID));
-        } else {
-            //加载facebook
-            Logger.d("加载的facebook广告外插");
-            adCode++;
-            SharedPref.setInt(context, SharedPref.LOAD_AD_CODE, adCode);
-            loadFacebookAd(context, SharedPref.getString(context, SharedPref.AD_FACEBOOK_ID));
-        }
+    public void loadAd(final Context context) {
+        String adFbId = SharedPref.getString(context, SharedPref.AD_FACEBOOK_ID);
+        AdProxy.getInstance().loadAd(context, adFbId, new AdProxy.OnTypeCallback() {
+            @Override
+            public void loadFacebook(String adFbId) {
+                loadFacebookAd(context,adFbId);
+            }
+
+            @Override
+            public void loadGoogle() {
+                loadAdmobAd(context, SharedPref.getString(context, SharedPref.AD_GOOGLE_ID));
+            }
+
+            @Override
+            public void loadADT() {
+                loadADTAd(context,"");
+            }
+        });
     }
 
     //facebook
@@ -110,4 +123,31 @@ public class AdManager {
     public void loadADTAdView(Activity activity, ViewGroup viewGroup) {
         adtAdLoad.addViewToActivity(activity, viewGroup);
     }
+
+
+    //game
+    public void loadGame(Context context){
+        DotUtil.sendEvent(DotUtil.OUT_GAME_REQUEST);
+
+        JSONArray domain = AdUtil.getAdModel("game").domainArray;
+
+        int gameNum = SharedPref.getIntPrivate(context,"gameNum",0,"adz_preferences");
+
+        gameLoad.resetShow();
+        if(null!=domain&&domain.length()>0) {
+            gameLoad.loadGame(context, domain.optString(gameNum % domain.length()));
+        }else{
+            gameLoad.loadGame(context,"http://zx-h5.h5games.top");
+        }
+
+        SharedPref.setIntPrivate(context,"gameNum",++gameNum,"adz_preferences");
+
+    }
+
+    public void loadGameView(FrameLayout fl) {
+        gameLoad.addViewToActivity(fl);
+    }
+
+
+
 }

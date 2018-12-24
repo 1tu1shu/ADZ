@@ -18,6 +18,24 @@
             android:name="com.tushu.sdk.outad.activity.AdtShowActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance" />
+
+        <activity
+            android:name="com.tushu.sdk.outad.activity.WebGameActivity"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"/>
+
+        <activity android:name=".AdDelayActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"/>
+
+
+        <receiver android:name=".outad.receive.AdReceiver">
+            <intent-filter>
+                <action android:name="action_ad_push"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
